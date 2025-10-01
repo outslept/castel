@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { CurveProvider } from "$/contexts/curve"
-import { OptionsEditor } from "$/components/OptionsEditor"
-import BezierCurveEditor from "$/components/BezierCurveEditor"
+import { CurveProvider } from "$/contexts/curve";
+import { OptionsEditor } from "$/components/OptionsEditor";
+import BezierCurveEditor from "$/components/BezierCurveEditor";
 
 export default function Page() {
   return (
@@ -20,5 +20,5 @@ export default function Page() {
         </div>
       </div>
     </CurveProvider>
-  )
+  );
 }

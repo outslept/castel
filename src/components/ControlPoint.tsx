@@ -1,20 +1,32 @@
-import { forwardRef } from "react"
+import { forwardRef } from "react";
 
-type CircleProps = React.ComponentPropsWithoutRef<"circle">
+type CircleProps = React.ComponentPropsWithoutRef<"circle">;
 
 type ControlPointProps = Omit<CircleProps, "cx" | "cy" | "r"> & {
-  x: number
-  y: number
-  active: boolean
-  hovered: boolean
-}
+  x: number;
+  y: number;
+  active: boolean;
+  hovered: boolean;
+};
 
 export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
   (
-    { x, y, active, hovered, onPointerDown, onPointerEnter, onPointerLeave, onKeyDown, role = "button", tabIndex = 0, ...rest },
-    ref
+    {
+      x,
+      y,
+      active,
+      hovered,
+      onPointerDown,
+      onPointerEnter,
+      onPointerLeave,
+      onKeyDown,
+      role = "button",
+      tabIndex = 0,
+      ...rest
+    },
+    ref,
   ) => {
-    const r = active ? 13 : hovered ? 11.5 : 10
+    const r = active ? 13 : hovered ? 11.5 : 10;
     return (
       <g
         className={`
@@ -83,7 +95,7 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
           }}
         />
       </g>
-    )
-  }
-)
-ControlPoint.displayName = "ControlPoint"
+    );
+  },
+);
+ControlPoint.displayName = "ControlPoint";

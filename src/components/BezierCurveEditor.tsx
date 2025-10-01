@@ -1,5 +1,5 @@
-import CoordinatesBadge from "$/components/CoordinatesBadge"
-import BezierCanvas from "$/components/BezierCanvas"
+import CoordinatesBadge from "$/components/CoordinatesBadge";
+import BezierCanvas from "$/components/BezierCanvas";
 
 export default function BezierCurveEditor() {
   return (
@@ -7,5 +7,5 @@ export default function BezierCurveEditor() {
       <CoordinatesBadge />
       <BezierCanvas />
     </div>
-  )
+  );
 }

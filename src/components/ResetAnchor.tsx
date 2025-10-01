@@ -1,10 +1,10 @@
 type Props = {
-  x: number
-  y: number
-  active: boolean
-  onPointerDown: React.PointerEventHandler<SVGCircleElement>
-  label: string
-}
+  x: number;
+  y: number;
+  active: boolean;
+  onPointerDown: React.PointerEventHandler<SVGCircleElement>;
+  label: string;
+};
 
 export function ResetAnchor({ x, y, active, onPointerDown, label }: Props) {
   return (
@@ -52,5 +52,5 @@ export function ResetAnchor({ x, y, active, onPointerDown, label }: Props) {
         aria-hidden="true"
       />
     </g>
-  )
+  );
 }

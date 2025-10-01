@@ -1,81 +1,130 @@
-import { useMemo, useRef } from "react"
-import { EasingCurve } from "./EasingCurve"
-import { ControlPoint } from "$/components/ControlPoint"
-import { ResetAnchor } from "$/components/ResetAnchor"
-import { useCurve } from "$/contexts/curve"
-import { useSvgSize } from "$/hooks/useSvgSize"
-import { useBezierDrag } from "$/hooks/useBezierDrag"
+import { useMemo, useRef } from "react";
+import { EasingCurve } from "./EasingCurve";
+import { ControlPoint } from "$/components/ControlPoint";
+import { ResetAnchor } from "$/components/ResetAnchor";
+import { useCurve } from "$/contexts/curve";
+import { useSvgSize } from "$/hooks/useSvgSize";
+import { useBezierDrag } from "$/hooks/useBezierDrag";
 
-type Size = { width: number; height: number }
+type Size = { width: number; height: number };
 type Bounds = {
-  left: number
-  right: number
-  top: number
-  bottom: number
-  w: number
-  h: number
-}
-type Positions = { x1: number; y1: number; x2: number; y2: number }
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  w: number;
+  h: number;
+};
+type Positions = { x1: number; y1: number; x2: number; y2: number };
 
 const boundsFrom = (size: Size, inset: number): Bounds => {
-  const left = inset
-  const top = inset
-  const right = size.width - inset
-  const bottom = size.height - inset
-  return { left, top, right, bottom, w: Math.max(0, right - left), h: Math.max(0, bottom - top) }
-}
+  const left = inset;
+  const top = inset;
+  const right = size.width - inset;
+  const bottom = size.height - inset;
+  return {
+    left,
+    top,
+    right,
+    bottom,
+    w: Math.max(0, right - left),
+    h: Math.max(0, bottom - top),
+  };
+};
 
-const positionsFrom = (bounds: Bounds, curve: readonly [number, number, number, number]): Positions => {
-  const [x1, y1, x2, y2] = curve
+const positionsFrom = (
+  bounds: Bounds,
+  curve: readonly [number, number, number, number],
+): Positions => {
+  const [x1, y1, x2, y2] = curve;
   return {
     x1: bounds.left + x1 * bounds.w,
     y1: bounds.bottom - y1 * bounds.h,
     x2: bounds.left + x2 * bounds.w,
     y2: bounds.bottom - y2 * bounds.h,
-  }
-}
+  };
+};
 
 export default function BezierCanvas() {
-  const { curve, setCurve, activePoint, setActivePoint, hoveredPoint, setHoveredPoint } = useCurve()
+  const {
+    curve,
+    setCurve,
+    activePoint,
+    setActivePoint,
+    hoveredPoint,
+    setHoveredPoint,
+  } = useCurve();
 
-  const svgRef = useRef<SVGSVGElement>(null!)
-  const p1Ref = useRef<SVGCircleElement>(null!)
-  const p2Ref = useRef<SVGCircleElement>(null!)
+  const svgRef = useRef<SVGSVGElement>(null!);
+  const p1Ref = useRef<SVGCircleElement>(null!);
+  const p2Ref = useRef<SVGCircleElement>(null!);
 
-  const size = useSvgSize(svgRef)
-  const inset = (12 / 100) * size.width
+  const size = useSvgSize(svgRef);
+  const inset = (12 / 100) * size.width;
 
-  const bounds = useMemo(() => boundsFrom(size, inset), [size, inset])
-  const pos = useMemo(() => positionsFrom(bounds, curve), [bounds, curve])
+  const bounds = useMemo(() => boundsFrom(size, inset), [size, inset]);
+  const pos = useMemo(() => positionsFrom(bounds, curve), [bounds, curve]);
 
-  const startDrag = useBezierDrag({ svgRef, inset, curve, onChange: setCurve, setActivePoint })
+  const startDrag = useBezierDrag({
+    svgRef,
+    inset,
+    curve,
+    onChange: setCurve,
+    setActivePoint,
+  });
 
-  const round3 = (n: number) => Math.round(n * 1000) / 1000
-  const clamp01 = (n: number) => Math.max(0, Math.min(1, n))
+  const round3 = (n: number) => Math.round(n * 1000) / 1000;
+  const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 
   const onPointKeyDown = (index: 0 | 1) => (e: React.KeyboardEvent) => {
-    const k = e.key
-    if (k !== "ArrowLeft" && k !== "ArrowRight" && k !== "ArrowUp" && k !== "ArrowDown") return
-    const step = e.shiftKey ? 0.05 : e.altKey || e.metaKey || e.ctrlKey ? 0.005 : 0.01
-    const [x1, y1, x2, y2] = curve
+    const k = e.key;
+    if (
+      k !== "ArrowLeft" &&
+      k !== "ArrowRight" &&
+      k !== "ArrowUp" &&
+      k !== "ArrowDown"
+    )
+      return;
+    const step = e.shiftKey
+      ? 0.05
+      : e.altKey || e.metaKey || e.ctrlKey
+        ? 0.005
+        : 0.01;
+    const [x1, y1, x2, y2] = curve;
     const next: [number, number, number, number] =
       index === 0
         ? [
-            clamp01(k === "ArrowLeft" ? x1 - step : k === "ArrowRight" ? x1 + step : x1),
-            round3(k === "ArrowUp" ? y1 + step : k === "ArrowDown" ? y1 - step : y1),
+            clamp01(
+              k === "ArrowLeft"
+                ? x1 - step
+                : k === "ArrowRight"
+                  ? x1 + step
+                  : x1,
+            ),
+            round3(
+              k === "ArrowUp" ? y1 + step : k === "ArrowDown" ? y1 - step : y1,
+            ),
             x2,
             y2,
           ]
         : [
             x1,
             y1,
-            clamp01(k === "ArrowLeft" ? x2 - step : k === "ArrowRight" ? x2 + step : x2),
-            round3(k === "ArrowUp" ? y2 + step : k === "ArrowDown" ? y2 - step : y2),
-          ]
-    setCurve(next)
-    setActivePoint(index)
-    e.preventDefault()
-  }
+            clamp01(
+              k === "ArrowLeft"
+                ? x2 - step
+                : k === "ArrowRight"
+                  ? x2 + step
+                  : x2,
+            ),
+            round3(
+              k === "ArrowUp" ? y2 + step : k === "ArrowDown" ? y2 - step : y2,
+            ),
+          ];
+    setCurve(next);
+    setActivePoint(index);
+    e.preventDefault();
+  };
 
   return (
     <svg
@@ -171,9 +220,13 @@ export default function BezierCanvas() {
         textAnchor="middle"
         style={{
           opacity: hoveredPoint === 0 || activePoint === 0 ? 1 : 0,
-          transform: hoveredPoint === 0 || activePoint === 0 ? "scale(1)" : "scale(0.93)",
+          transform:
+            hoveredPoint === 0 || activePoint === 0
+              ? "scale(1)"
+              : "scale(0.93)",
           transformOrigin: "center",
-          transition: "opacity 160ms var(--ease-out), transform 160ms var(--ease-out)",
+          transition:
+            "opacity 160ms var(--ease-out), transform 160ms var(--ease-out)",
           willChange: "transform, opacity",
         }}
       >
@@ -186,14 +239,18 @@ export default function BezierCanvas() {
         textAnchor="middle"
         style={{
           opacity: hoveredPoint === 1 || activePoint === 1 ? 1 : 0,
-          transform: hoveredPoint === 1 || activePoint === 1 ? "scale(1)" : "scale(0.93)",
+          transform:
+            hoveredPoint === 1 || activePoint === 1
+              ? "scale(1)"
+              : "scale(0.93)",
           transformOrigin: "center",
-          transition: "opacity 160ms var(--ease-out), transform 160ms var(--ease-out)",
+          transition:
+            "opacity 160ms var(--ease-out), transform 160ms var(--ease-out)",
           willChange: "transform, opacity",
         }}
       >
         P2
       </text>
     </svg>
-  )
+  );
 }

@@ -1,14 +1,14 @@
-import type { Bezier } from "$/lib/bezier"
+import type { Bezier } from "$/lib/bezier";
 
 export type EasingCurveProps = {
-  curve: Bezier
-  width: number
-  height: number
-  left?: number
-  top?: number
-  right?: number
-  bottom?: number
-}
+  curve: Bezier;
+  width: number;
+  height: number;
+  left?: number;
+  top?: number;
+  right?: number;
+  bottom?: number;
+};
 
 export function EasingCurve({
   curve,
@@ -19,12 +19,12 @@ export function EasingCurve({
   right = width,
   bottom = height,
 }: EasingCurveProps) {
-  const w = right - left
-  const h = bottom - top
-  const [x1, y1, x2, y2] = curve
+  const w = right - left;
+  const h = bottom - top;
+  const [x1, y1, x2, y2] = curve;
 
-  const curvePath = `M ${left},${bottom} C ${left + x1 * w},${bottom - y1 * h} ${left + x2 * w},${bottom - y2 * h} ${right},${top}`
-  const borderPoints = `${left},${top} ${left},${bottom} ${right},${bottom}`
+  const curvePath = `M ${left},${bottom} C ${left + x1 * w},${bottom - y1 * h} ${left + x2 * w},${bottom - y2 * h} ${right},${top}`;
+  const borderPoints = `${left},${top} ${left},${bottom} ${right},${bottom}`;
 
   return (
     <g>
@@ -100,5 +100,5 @@ export function EasingCurve({
         className="pointer-events-none"
       />
     </g>
-  )
+  );
 }

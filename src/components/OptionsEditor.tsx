@@ -1,39 +1,46 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
-import { Copy, RotateCcw, Check } from "lucide-react"
-import { Tooltip } from "@base-ui-components/react/tooltip"
-import { NAMED, parseCurve, formatCss, formatArray, Bezier, NamedEasing } from "$/lib/bezier"
-import { useCurve } from "$/contexts/curve"
+import { useEffect, useMemo, useState } from "react";
+import { Copy, RotateCcw, Check } from "lucide-react";
+import { Tooltip } from "@base-ui-components/react/tooltip";
+import {
+  NAMED,
+  parseCurve,
+  formatCss,
+  formatArray,
+  Bezier,
+  NamedEasing,
+} from "$/lib/bezier";
+import { useCurve } from "$/contexts/curve";
 
 export function OptionsEditor() {
-  const { curve, setCurve } = useCurve()
-  const [text, setText] = useState(() => formatCss(curve))
-  const [copied, setCopied] = useState<"css" | "array" | null>(null)
+  const { curve, setCurve } = useCurve();
+  const [text, setText] = useState(() => formatCss(curve));
+  const [copied, setCopied] = useState<"css" | "array" | null>(null);
 
-  const css = useMemo(() => formatCss(curve), [curve])
+  const css = useMemo(() => formatCss(curve), [curve]);
 
   useEffect(() => {
-    setText(formatCss(curve))
-  }, [curve])
+    setText(formatCss(curve));
+  }, [curve]);
 
-  const handleCurveChange = (c: Bezier) => setCurve([...c])
+  const handleCurveChange = (c: Bezier) => setCurve([...c]);
 
   const commitText = () => {
-    const parsed = parseCurve(text)
-    if (parsed) handleCurveChange(parsed)
-  }
+    const parsed = parseCurve(text);
+    if (parsed) handleCurveChange(parsed);
+  };
 
   const copy = async (s: string, type: "css" | "array") => {
-    await navigator.clipboard.writeText(s)
-    setCopied(type)
-    setTimeout(() => setCopied(null), 1200)
-  }
+    await navigator.clipboard.writeText(s);
+    setCopied(type);
+    setTimeout(() => setCopied(null), 1200);
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-{(Object.keys(NAMED) as Array<NamedEasing>).map((k) => (
+        {(Object.keys(NAMED) as Array<NamedEasing>).map((k) => (
           <button
             key={k}
             onClick={() => handleCurveChange(NAMED[k])}
@@ -60,7 +67,7 @@ export function OptionsEditor() {
         onChange={(e) => setText(e.target.value)}
         onBlur={commitText}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) commitText()
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) commitText();
         }}
       />
 
@@ -72,7 +79,11 @@ export function OptionsEditor() {
               onClick={() => copy(css, "css")}
               className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all hover:bg-primary/90 active:scale-95"
             >
-              {copied === "css" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {copied === "css" ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
             </Tooltip.Trigger>
             <Tooltip.Portal>
               <Tooltip.Positioner sideOffset={8}>
@@ -89,7 +100,11 @@ export function OptionsEditor() {
               onClick={() => copy(formatArray(curve), "array")}
               className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background text-foreground transition-all hover:bg-accent hover:text-accent-foreground active:scale-95"
             >
-              {copied === "array" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {copied === "array" ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
             </Tooltip.Trigger>
             <Tooltip.Portal>
               <Tooltip.Positioner sideOffset={8}>
@@ -119,5 +134,5 @@ export function OptionsEditor() {
         </div>
       </Tooltip.Provider>
     </div>
-  )
+  );
 }
