@@ -3,6 +3,7 @@
   "extends": ["config:recommended", ":semanticCommits"],
   "dependencyDashboard": true,
   "prConcurrentLimit": 5,
+  "prHourlyLimit": 5,
 
   "platformAutomerge": true,
   "automergeType": "pr",
