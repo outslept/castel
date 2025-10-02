@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Copy, RotateCcw, Check } from "lucide-react";
 import { Tooltip } from "@base-ui-components/react/tooltip";
-import { NAMED, parseCurve, formatCss, formatArray, Bezier } from "$/lib/bezier";
+import {
+  NAMED,
+  parseCurve,
+  formatCss,
+  formatArray,
+  Bezier,
+} from "$/lib/bezier";
 import { useCurve } from "$/contexts/curve";
 import { PresetAutocomplete } from "$/components/presets/PresetAutocomplete";
 

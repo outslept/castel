@@ -44,14 +44,20 @@ export function CompareMenu({
         aria-label="Compare"
         className={[
           "inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-xs font-medium transition-colors",
-          enabled ? "bg-primary/10 text-primary hover:bg-primary/15" : "hover:bg-accent hover:text-accent-foreground",
+          enabled
+            ? "bg-primary/10 text-primary hover:bg-primary/15"
+            : "hover:bg-accent hover:text-accent-foreground",
         ].join(" ")}
       >
         <GitCompare className="h-4 w-4" />
         <span className="hidden md:inline">Compare</span>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner sideOffset={10} align="end" className="outline-none">
+        <Popover.Positioner
+          sideOffset={10}
+          align="end"
+          className="outline-none"
+        >
           <Popover.Popup className="z-50 w-[min(92vw,360px)] rounded-xl border border-border bg-card/95 text-foreground shadow-lg backdrop-blur-md p-2">
             <div className="flex items-center justify-between gap-2 p-1">
               <div className="text-sm font-medium">Compare</div>
@@ -60,7 +66,9 @@ export function CompareMenu({
                 onClick={() => onEnabledChange(!enabled)}
                 className={[
                   "h-8 rounded-md px-2 text-xs font-medium transition-colors",
-                  enabled ? "bg-primary text-primary-foreground" : "border border-border hover:bg-accent hover:text-accent-foreground",
+                  enabled
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border hover:bg-accent hover:text-accent-foreground",
                 ].join(" ")}
               >
                 {enabled ? "On" : "Off"}
@@ -97,18 +105,25 @@ export function CompareMenu({
               />
               <div className="text-xs text-muted-foreground">Color</div>
               <div className="flex items-center gap-1.5">
-                {["var(--muted-foreground)", "oklch(0.72 0.2 30)", "oklch(0.72 0.2 200)", "oklch(0.76 0.24 140)"].map(
-                  (c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => onColorChange(c)}
-                      className="h-5 w-5 rounded-full border border-border"
-                      style={{ background: c, boxShadow: color === c ? "0 0 0 2px var(--ring) inset" : undefined }}
-                      aria-label={`Color ${c}`}
-                    />
-                  ),
-                )}
+                {[
+                  "var(--muted-foreground)",
+                  "oklch(0.72 0.2 30)",
+                  "oklch(0.72 0.2 200)",
+                  "oklch(0.76 0.24 140)",
+                ].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => onColorChange(c)}
+                    className="h-5 w-5 rounded-full border border-border"
+                    style={{
+                      background: c,
+                      boxShadow:
+                        color === c ? "0 0 0 2px var(--ring) inset" : undefined,
+                    }}
+                    aria-label={`Color ${c}`}
+                  />
+                ))}
               </div>
             </div>
 

@@ -10,7 +10,14 @@ import { CanvasGrid } from "$/components/CanvasGrid";
 import { useSvgSize } from "$/hooks/useSvgSize";
 
 type Size = { width: number; height: number };
-type Bounds = { left: number; right: number; top: number; bottom: number; w: number; h: number };
+type Bounds = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  w: number;
+  h: number;
+};
 
 const VB: Size = { width: 1000, height: 600 };
 const INSET_VB = 120;
@@ -21,10 +28,20 @@ const boundsFrom = (size: Size, inset: number): Bounds => {
   const top = inset;
   const right = size.width - inset;
   const bottom = size.height - inset;
-  return { left, top, right, bottom, w: Math.max(0, right - left), h: Math.max(0, bottom - top) };
+  return {
+    left,
+    top,
+    right,
+    bottom,
+    w: Math.max(0, right - left),
+    h: Math.max(0, bottom - top),
+  };
 };
 
-const positionsFrom = (bounds: Bounds, curve: readonly [number, number, number, number]) => {
+const positionsFrom = (
+  bounds: Bounds,
+  curve: readonly [number, number, number, number],
+) => {
   const [x1, y1, x2, y2] = curve;
   return {
     x1: bounds.left + x1 * bounds.w,
@@ -35,7 +52,14 @@ const positionsFrom = (bounds: Bounds, curve: readonly [number, number, number, 
 };
 
 export default function BezierCanvas() {
-  const { curve, setCurve, activePoint, setActivePoint, hoveredPoint, setHoveredPoint } = useCurve();
+  const {
+    curve,
+    setCurve,
+    activePoint,
+    setActivePoint,
+    hoveredPoint,
+    setHoveredPoint,
+  } = useCurve();
 
   const svgRef = useRef<SVGSVGElement>(null!);
   const size = useSvgSize(svgRef);
@@ -57,22 +81,43 @@ export default function BezierCanvas() {
 
   const onPointKeyDown = (index: 0 | 1) => (e: React.KeyboardEvent) => {
     const k = e.key;
-    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(k)) return;
-    const step = e.shiftKey ? 0.05 : e.altKey || e.metaKey || e.ctrlKey ? 0.005 : 0.01;
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(k))
+      return;
+    const step = e.shiftKey
+      ? 0.05
+      : e.altKey || e.metaKey || e.ctrlKey
+        ? 0.005
+        : 0.01;
     const [x1, y1, x2, y2] = curve;
     const next: [number, number, number, number] =
       index === 0
         ? [
-            clamp01(k === "ArrowLeft" ? x1 - step : k === "ArrowRight" ? x1 + step : x1),
-            round3(k === "ArrowUp" ? y1 + step : k === "ArrowDown" ? y1 - step : y1),
+            clamp01(
+              k === "ArrowLeft"
+                ? x1 - step
+                : k === "ArrowRight"
+                  ? x1 + step
+                  : x1,
+            ),
+            round3(
+              k === "ArrowUp" ? y1 + step : k === "ArrowDown" ? y1 - step : y1,
+            ),
             x2,
             y2,
           ]
         : [
             x1,
             y1,
-            clamp01(k === "ArrowLeft" ? x2 - step : k === "ArrowRight" ? x2 + step : x2),
-            round3(k === "ArrowUp" ? y2 + step : k === "ArrowDown" ? y2 - step : y2),
+            clamp01(
+              k === "ArrowLeft"
+                ? x2 - step
+                : k === "ArrowRight"
+                  ? x2 + step
+                  : x2,
+            ),
+            round3(
+              k === "ArrowUp" ? y2 + step : k === "ArrowDown" ? y2 - step : y2,
+            ),
           ];
     setCurve(next);
     setActivePoint(index);
@@ -94,7 +139,12 @@ export default function BezierCanvas() {
       role="img"
       aria-label="Cubic Bézier editor"
     >
-      <CanvasGrid left={bounds.left} top={bounds.top} right={bounds.right} bottom={bounds.bottom} />
+      <CanvasGrid
+        left={bounds.left}
+        top={bounds.top}
+        right={bounds.right}
+        bottom={bounds.bottom}
+      />
 
       <EasingCurve
         curve={curve}
@@ -180,7 +230,10 @@ export default function BezierCanvas() {
         textAnchor="middle"
         style={{
           opacity: hoveredPoint === 0 || activePoint === 0 ? 1 : 0,
-          transform: hoveredPoint === 0 || activePoint === 0 ? "scale(1)" : "scale(0.93)",
+          transform:
+            hoveredPoint === 0 || activePoint === 0
+              ? "scale(1)"
+              : "scale(0.93)",
           transformOrigin: "center",
         }}
       >
@@ -193,7 +246,10 @@ export default function BezierCanvas() {
         textAnchor="middle"
         style={{
           opacity: hoveredPoint === 1 || activePoint === 1 ? 1 : 0,
-          transform: hoveredPoint === 1 || activePoint === 1 ? "scale(1)" : "scale(0.93)",
+          transform:
+            hoveredPoint === 1 || activePoint === 1
+              ? "scale(1)"
+              : "scale(0.93)",
           transformOrigin: "center",
         }}
       >

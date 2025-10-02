@@ -2,12 +2,7 @@
 
 import { Autocomplete } from "@base-ui-components/react/autocomplete";
 import { useMemo } from "react";
-import {
-  NAMED,
-  formatCss,
-  type Bezier,
-  type NamedEasing,
-} from "$/lib/bezier";
+import { NAMED, formatCss, type Bezier, type NamedEasing } from "$/lib/bezier";
 
 type Preset = {
   id: string;
@@ -38,7 +33,11 @@ function MiniCurve({
   const border = `${left},${top} ${left},${bottom} ${right},${bottom}`;
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-11 w-[88px] shrink-0" aria-hidden>
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="h-11 w-[88px] shrink-0"
+      aria-hidden
+    >
       <polyline
         points={border}
         fill="none"
@@ -90,12 +89,14 @@ export function PresetAutocomplete({
 }) {
   const items = useMemo<Preset[]>(
     () =>
-      (Object.entries(NAMED) as Array<[NamedEasing, Bezier]>).map(([name, curve]) => ({
-        id: name,
-        name,
-        curve,
-        css: formatCss(curve),
-      })),
+      (Object.entries(NAMED) as Array<[NamedEasing, Bezier]>).map(
+        ([name, curve]) => ({
+          id: name,
+          name,
+          curve,
+          css: formatCss(curve),
+        }),
+      ),
     [],
   );
 
@@ -111,7 +112,10 @@ export function PresetAutocomplete({
         filter={(p, q) => {
           const query = q.trim().toLowerCase();
           if (!query) return true;
-          return p.name.toLowerCase().includes(query) || p.css.toLowerCase().includes(query);
+          return (
+            p.name.toLowerCase().includes(query) ||
+            p.css.toLowerCase().includes(query)
+          );
         }}
       >
         <label className="flex w-full flex-col gap-1 text-sm font-medium">
@@ -134,7 +138,11 @@ export function PresetAutocomplete({
 
         {shouldRenderPopup && (
           <Autocomplete.Portal>
-            <Autocomplete.Positioner className="outline-none" sideOffset={8} align="start">
+            <Autocomplete.Positioner
+              className="outline-none"
+              sideOffset={8}
+              align="start"
+            >
               <Autocomplete.Popup className="z-50 w-[var(--anchor-width)] max-h-[min(var(--available-height),23rem)] max-w-[var(--available-width)] overflow-y-auto scroll-pt-2 scroll-pb-2 overscroll-contain rounded-lg border border-border bg-popover py-2 text-popover-foreground shadow-md">
                 <Autocomplete.Empty className="px-4 py-2 text-[0.925rem] leading-4 text-muted-foreground empty:m-0 empty:p-0">
                   No matches.
@@ -150,7 +158,9 @@ export function PresetAutocomplete({
                       <MiniCurve curve={p.curve} />
                       <div className="min-w-0">
                         <div className="truncate font-medium">{p.name}</div>
-                        <div className="truncate text-xs text-muted-foreground">{p.css}</div>
+                        <div className="truncate text-xs text-muted-foreground">
+                          {p.css}
+                        </div>
                       </div>
                     </Autocomplete.Item>
                   )}

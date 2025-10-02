@@ -45,7 +45,9 @@ export function ComparePanel({
           onClick={() => onEnabledChange(!enabled)}
           className={[
             "h-8 rounded-md px-2 text-xs font-medium transition-colors",
-            enabled ? "bg-primary text-primary-foreground" : "border border-border hover:bg-accent hover:text-accent-foreground",
+            enabled
+              ? "bg-primary text-primary-foreground"
+              : "border border-border hover:bg-accent hover:text-accent-foreground",
           ].join(" ")}
         >
           {enabled ? "On" : "Off"}
@@ -104,7 +106,11 @@ export function ComparePanel({
               type="button"
               onClick={() => onColorChange?.(c.v)}
               className="h-6 w-6 rounded-md border border-border"
-              style={{ background: c.v, boxShadow: color === c.v ? "0 0 0 2px var(--ring) inset" : undefined }}
+              style={{
+                background: c.v,
+                boxShadow:
+                  color === c.v ? "0 0 0 2px var(--ring) inset" : undefined,
+              }}
               aria-label={`Color ${c.v}`}
               title={c.v}
             />

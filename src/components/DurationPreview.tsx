@@ -14,7 +14,12 @@ export function DurationPreview({ className }: { className?: string }) {
   const [tick, setTick] = useState(0);
 
   return (
-    <div className={["inline-flex flex-col gap-2 rounded-lg border border-border bg-card/80 p-2 backdrop-blur-md shadow-sm", className ?? ""].join(" ")}>
+    <div
+      className={[
+        "inline-flex flex-col gap-2 rounded-lg border border-border bg-card/80 p-2 backdrop-blur-md shadow-sm",
+        className ?? "",
+      ].join(" ")}
+    >
       <div className="flex flex-wrap items-center gap-1.5">
         {DURATIONS.map((d) => (
           <button
@@ -22,7 +27,9 @@ export function DurationPreview({ className }: { className?: string }) {
             onClick={() => setDur(d)}
             className={[
               "h-8 rounded-md px-2 text-xs font-medium transition-colors",
-              dur === d ? "bg-primary text-primary-foreground" : "border border-border hover:bg-accent hover:text-accent-foreground",
+              dur === d
+                ? "bg-primary text-primary-foreground"
+                : "border border-border hover:bg-accent hover:text-accent-foreground",
             ].join(" ")}
           >
             {d}ms
@@ -44,10 +51,12 @@ export function DurationPreview({ className }: { className?: string }) {
           <div
             key={tick}
             className="absolute top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-primary ring-2 ring-background shadow"
-            style={{
-              animation: `preview-move ${dur}ms 0ms 1 both`,
-              animationTimingFunction: easing,
-            } as React.CSSProperties}
+            style={
+              {
+                animation: `preview-move ${dur}ms 0ms 1 both`,
+                animationTimingFunction: easing,
+              } as React.CSSProperties
+            }
           />
         </div>
         <style>{`@keyframes preview-move { from { left: 0; } to { left: calc(100% - 12px); } }`}</style>

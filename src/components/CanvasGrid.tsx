@@ -13,7 +13,7 @@ export function CanvasGrid({ left, top, right, bottom }: Props) {
 
   const majors = [0, 0.25, 0.5, 0.75, 1];
   const minors = Array.from({ length: 21 }, (_, i) => i / 20);
-  
+
   return (
     <g aria-hidden="true" shapeRendering="crispEdges">
       <rect
@@ -108,8 +108,12 @@ export function CanvasGrid({ left, top, right, bottom }: Props) {
         const y = bottom - t * h;
         return (
           <g key={`labels-${t}`} fontSize={11} fill="var(--muted-foreground)">
-            <text x={x} y={bottom + 16} textAnchor="middle">{t.toFixed(2)}</text>
-            <text x={left - 10} y={y + 4} textAnchor="end">{t.toFixed(2)}</text>
+            <text x={x} y={bottom + 16} textAnchor="middle">
+              {t.toFixed(2)}
+            </text>
+            <text x={left - 10} y={y + 4} textAnchor="end">
+              {t.toFixed(2)}
+            </text>
           </g>
         );
       })}

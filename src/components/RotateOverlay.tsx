@@ -41,7 +41,8 @@ export function RotateOverlay() {
         </div>
         <div className="text-base font-medium">Rotate your device</div>
         <div className="mt-1 text-sm text-muted-foreground">
-          This tool is not optimized for small portrait screens. For the best experience, use landscape orientation.
+          This tool is not optimized for small portrait screens. For the best
+          experience, use landscape orientation.
         </div>
       </div>
     </div>

@@ -45,7 +45,9 @@ export function CurveProvider({
     [curve, activePoint, hoveredPoint],
   );
 
-  return <CurveContext.Provider value={value}>{children}</CurveContext.Provider>;
+  return (
+    <CurveContext.Provider value={value}>{children}</CurveContext.Provider>
+  );
 }
 
 export function useCurve(): CurveContextValue {
