@@ -41,7 +41,12 @@ export function parseCurve(input: string): BezierDefinition | null {
   return bezier(clamp01(x1), y1, clamp01(x2), y2);
 }
 
-export function bezier(x1: number, y1: number, x2: number, y2: number): BezierDefinition {
+export function bezier(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+): BezierDefinition {
   return [x1, y1, x2, y2];
 }
 

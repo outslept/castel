@@ -28,7 +28,11 @@ export default function BezierCurveEditor() {
         onClick={() => copy(css, "css")}
         className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
       >
-        {copied === "css" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+        {copied === "css" ? (
+          <Check className="h-4 w-4" />
+        ) : (
+          <Copy className="h-4 w-4" />
+        )}
         <span className="hidden md:inline">CSS</span>
       </button>
       <button
@@ -37,7 +41,11 @@ export default function BezierCurveEditor() {
         onClick={() => copy(formatArray(curve), "array")}
         className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
       >
-        {copied === "array" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+        {copied === "array" ? (
+          <Check className="h-4 w-4" />
+        ) : (
+          <Copy className="h-4 w-4" />
+        )}
         <span className="hidden md:inline">Array</span>
       </button>
       <button
@@ -58,7 +66,9 @@ export default function BezierCurveEditor() {
       <CoordinatesBadge />
       <BezierCanvas />
       <div className="absolute inset-0 z-20 pointer-events-none">
-        <div className="absolute bottom-3 right-3 pointer-events-auto">{Toolbar}</div>
+        <div className="absolute bottom-3 right-3 pointer-events-auto">
+          {Toolbar}
+        </div>
       </div>
     </div>
   );

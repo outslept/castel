@@ -9,7 +9,7 @@ export function ThemeToggle() {
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
 
-  const current = theme === "system" ? systemTheme ?? "light" : theme;
+  const current = theme === "system" ? (systemTheme ?? "light") : theme;
 
   return (
     <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 px-1.5 py-1 shadow-sm backdrop-blur-md">
@@ -19,7 +19,9 @@ export function ThemeToggle() {
         onClick={() => setTheme("system")}
         className={[
           "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-          theme === "system" ? "bg-primary text-primary-foreground" : "hover:bg-accent hover:text-accent-foreground",
+          theme === "system"
+            ? "bg-primary text-primary-foreground"
+            : "hover:bg-accent hover:text-accent-foreground",
         ].join(" ")}
         title="System"
       >
@@ -31,7 +33,9 @@ export function ThemeToggle() {
         onClick={() => setTheme("light")}
         className={[
           "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-          current === "light" && theme !== "system" ? "bg-primary text-primary-foreground" : "hover:bg-accent hover:text-accent-foreground",
+          current === "light" && theme !== "system"
+            ? "bg-primary text-primary-foreground"
+            : "hover:bg-accent hover:text-accent-foreground",
         ].join(" ")}
         title="Light"
       >
@@ -43,7 +47,9 @@ export function ThemeToggle() {
         onClick={() => setTheme("dark")}
         className={[
           "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-          current === "dark" && theme !== "system" ? "bg-primary text-primary-foreground" : "hover:bg-accent hover:text-accent-foreground",
+          current === "dark" && theme !== "system"
+            ? "bg-primary text-primary-foreground"
+            : "hover:bg-accent hover:text-accent-foreground",
         ].join(" ")}
         title="Dark"
       >

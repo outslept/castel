@@ -12,7 +12,9 @@ export default function Page({
   searchParams?: { c?: string; curve?: string };
 }) {
   const raw = searchParams?.c ?? searchParams?.curve;
-  const initial: BezierDefinition = raw ? (parseCurve(raw) ?? NAMED.ease) : NAMED.ease;
+  const initial: BezierDefinition = raw
+    ? (parseCurve(raw) ?? NAMED.ease)
+    : NAMED.ease;
 
   return (
     <CurveProvider initial={initial}>
@@ -21,7 +23,10 @@ export default function Page({
           <div className="absolute right-3 top-3 z-20">
             <ThemeToggle />
           </div>
-          <EditorLayout left={<OptionsEditor />} right={<BezierCurveEditor />} />
+          <EditorLayout
+            left={<OptionsEditor />}
+            right={<BezierCurveEditor />}
+          />
         </div>
       </main>
     </CurveProvider>

@@ -38,18 +38,21 @@ export function decodeState(hash: string): State | null {
       const unzipped = unzlibSync(bytesFromB64(payload));
       const json = strFromU8(unzipped);
       const parsed = JSON.parse(json);
-      if (Array.isArray(parsed.c) && parsed.c.length === 4) return { c: parsed.c };
+      if (Array.isArray(parsed.c) && parsed.c.length === 4)
+        return { c: parsed.c };
       return null;
     }
     if (mode === pxU) {
       const json = strFromU8(bytesFromB64(payload));
       const parsed = JSON.parse(json);
-      if (Array.isArray(parsed.c) && parsed.c.length === 4) return { c: parsed.c };
+      if (Array.isArray(parsed.c) && parsed.c.length === 4)
+        return { c: parsed.c };
       return null;
     }
     const json = strFromU8(bytesFromB64(h));
     const parsed = JSON.parse(json);
-    if (Array.isArray(parsed.c) && parsed.c.length === 4) return { c: parsed.c };
+    if (Array.isArray(parsed.c) && parsed.c.length === 4)
+      return { c: parsed.c };
     return null;
   } catch {
     return null;

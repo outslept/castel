@@ -7,7 +7,14 @@ type Props = {
   label: string;
 };
 
-export function ResetAnchor({ x, y, active, onPointerDown, onReset, label }: Props) {
+export function ResetAnchor({
+  x,
+  y,
+  active,
+  onPointerDown,
+  onReset,
+  label,
+}: Props) {
   return (
     <g className="transform origin-center will-change-transform">
       <title>{label}</title>
@@ -40,7 +47,10 @@ export function ResetAnchor({ x, y, active, onPointerDown, onReset, label }: Pro
         cx={x}
         cy={y}
         className="fill-muted-foreground opacity-[0.45]"
-        style={{ transition: "r 160ms var(--ease-out, cubic-bezier(0,0,0.58,1))", pointerEvents: "none" }}
+        style={{
+          transition: "r 160ms var(--ease-out, cubic-bezier(0,0,0.58,1))",
+          pointerEvents: "none",
+        }}
         aria-hidden="true"
       />
     </g>

@@ -26,7 +26,12 @@ export function useBezierDrag({
   return useCallback(
     (point: PointIndex, opts?: StartOptions) =>
       (startEvent: React.PointerEvent<SVGCircleElement>) => {
-        const start: BezierDefinition = [curve[0], curve[1], curve[2], curve[3]]
+        const start: BezierDefinition = [
+          curve[0],
+          curve[1],
+          curve[2],
+          curve[3],
+        ];
         let moved = false;
         startEvent.preventDefault();
         startEvent.stopPropagation();
@@ -51,7 +56,11 @@ export function useBezierDrag({
         const apply = (x: number, y: number) => {
           const nextX = clamp01(toFixed3(x - offX));
           const nextY = toFixed3(y - offY);
-          onChange(point === 0 ? bezier(nextX, nextY, start[2], start[3]) : bezier(start[0], start[1], nextX, nextY));
+          onChange(
+            point === 0
+              ? bezier(nextX, nextY, start[2], start[3])
+              : bezier(start[0], start[1], nextX, nextY),
+          );
         };
         const move = (e: PointerEvent) => {
           moved = true;
@@ -59,7 +68,11 @@ export function useBezierDrag({
         };
         const end = () => {
           if (!moved && opts?.resetHandle) {
-            onChange(point === 0 ? bezier(0, 0, start[2], start[3]) : bezier(start[0], start[1], 1, 1));
+            onChange(
+              point === 0
+                ? bezier(0, 0, start[2], start[3])
+                : bezier(start[0], start[1], 1, 1),
+            );
           }
           setActivePoint(null);
           root.removeAttribute("data-dragging");
