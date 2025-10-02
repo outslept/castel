@@ -1,13 +1,13 @@
 "use client";
-
 import { Autocomplete } from "@base-ui-components/react/autocomplete";
 import { useMemo } from "react";
-import { NAMED, formatCss, type Bezier, type NamedEasing } from "$/lib/bezier";
+import { NAMED, formatCss, type NamedEasing } from "$/lib/bezier";
+import { BezierDefinition } from "motion";
 
 type Preset = {
   id: string;
   name: NamedEasing;
-  curve: Bezier;
+  curve: BezierDefinition;
   css: string;
 };
 
@@ -17,7 +17,7 @@ function MiniCurve({
   height = 48,
   pad = 6,
 }: {
-  curve: Bezier;
+  curve: BezierDefinition;
   width?: number;
   height?: number;
   pad?: number;
@@ -31,18 +31,13 @@ function MiniCurve({
   const [x1, y1, x2, y2] = curve;
   const path = `M ${left},${bottom} C ${left + x1 * w},${bottom - y1 * h} ${left + x2 * w},${bottom - y2 * h} ${right},${top}`;
   const border = `${left},${top} ${left},${bottom} ${right},${bottom}`;
-
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      className="h-11 w-[88px] shrink-0"
-      aria-hidden
-    >
+    <svg viewBox={`0 0 ${width} ${height}`} className="h-11 w-[88px] shrink-0" aria-hidden>
       <polyline
         points={border}
         fill="none"
-        stroke="var(--muted-foreground)"
-        strokeOpacity="0.25"
+        stroke="currentColor"
+        opacity="0.35"
         strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -50,8 +45,8 @@ function MiniCurve({
       <path
         d={path}
         fill="none"
-        stroke="var(--primary)"
-        strokeOpacity="0.14"
+        stroke="currentColor"
+        opacity="0.18"
         strokeWidth="7"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -59,7 +54,7 @@ function MiniCurve({
       <path
         d={path}
         fill="none"
-        stroke="var(--primary)"
+        stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -80,7 +75,7 @@ export function PresetAutocomplete({
 }: {
   value: string;
   onValueChange: (v: string) => void;
-  onPick: (curve: Bezier, css: string) => void;
+  onPick: (curve: BezierDefinition, css: string) => void;
   onCommit?: () => void;
   className?: string;
   inputClassName?: string;
@@ -89,14 +84,12 @@ export function PresetAutocomplete({
 }) {
   const items = useMemo<Preset[]>(
     () =>
-      (Object.entries(NAMED) as Array<[NamedEasing, Bezier]>).map(
-        ([name, curve]) => ({
-          id: name,
-          name,
-          curve,
-          css: formatCss(curve),
-        }),
-      ),
+      (Object.entries(NAMED) as Array<[NamedEasing, BezierDefinition]>).map(([name, curve]) => ({
+        id: name,
+        name,
+        curve,
+        css: formatCss(curve),
+      })),
     [],
   );
 
@@ -112,10 +105,7 @@ export function PresetAutocomplete({
         filter={(p, q) => {
           const query = q.trim().toLowerCase();
           if (!query) return true;
-          return (
-            p.name.toLowerCase().includes(query) ||
-            p.css.toLowerCase().includes(query)
-          );
+          return p.name.toLowerCase().includes(query) || p.css.toLowerCase().includes(query);
         }}
       >
         <label className="flex w-full flex-col gap-1 text-sm font-medium">
@@ -138,29 +128,30 @@ export function PresetAutocomplete({
 
         {shouldRenderPopup && (
           <Autocomplete.Portal>
-            <Autocomplete.Positioner
-              className="outline-none"
-              sideOffset={8}
-              align="start"
-            >
-              <Autocomplete.Popup className="z-50 w-[var(--anchor-width)] max-h-[min(var(--available-height),23rem)] max-w-[var(--available-width)] overflow-y-auto scroll-pt-2 scroll-pb-2 overscroll-contain rounded-lg border border-border bg-popover py-2 text-popover-foreground shadow-md">
+            <Autocomplete.Positioner className="outline-none" sideOffset={8} align="start">
+              <Autocomplete.Popup className="z-50 w-[var(--anchor-width)] max-h-[min(var(--available-height),23rem)] max-w-[var(--available-width)] overflow-y-auto scroll-pt-2 scroll-pb-2 overscroll-contain rounded-lg border border-border bg-popover/95 text-popover-foreground shadow-md backdrop-blur-md">
                 <Autocomplete.Empty className="px-4 py-2 text-[0.925rem] leading-4 text-muted-foreground empty:m-0 empty:p-0">
                   No matches.
                 </Autocomplete.Empty>
+
                 <Autocomplete.List>
                   {(p: Preset) => (
                     <Autocomplete.Item
                       key={p.id}
                       value={p}
                       onClick={() => onPick(p.curve, p.css)}
-                      className="relative flex cursor-default items-center gap-3 py-2 pr-8 pl-3 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:text-primary-foreground data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-2 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-md data-[highlighted]:before:bg-primary"
+                      className={[
+                        "relative flex cursor-default items-center gap-3 py-2 pr-8 pl-3 text-sm leading-4 outline-none select-none",
+                        "text-foreground",
+                        "data-[highlighted]:relative data-[highlighted]:z-0",
+                        "data-[highlighted]:text-foreground",
+                        "data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-2 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-md data-[highlighted]:before:bg-accent",
+                      ].join(" ")}
                     >
                       <MiniCurve curve={p.curve} />
                       <div className="min-w-0">
                         <div className="truncate font-medium">{p.name}</div>
-                        <div className="truncate text-xs text-muted-foreground">
-                          {p.css}
-                        </div>
+                        <div className="truncate text-xs text-muted-foreground">{p.css}</div>
                       </div>
                     </Autocomplete.Item>
                   )}

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { NAMED, parseCurve, formatCss } from "$/lib/bezier";
 import { useCurve } from "$/contexts/curve";
-import { PresetAutocomplete } from "$/components/presets/PresetAutocomplete";
+import { PresetAutocomplete } from "$/components/PresetAutocomplete";
 import { BezierDefinition } from "motion";
 
 export function OptionsEditor() {
