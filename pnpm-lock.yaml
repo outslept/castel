@@ -11,6 +11,9 @@ importers:
       '@base-ui-components/react':
         specifier: 1.0.0-beta.4
         version: 1.0.0-beta.4(@types/react@19.1.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@19.1.0)
@@ -476,6 +479,9 @@ packages:
   enhanced-resolve@5.18.3:
     resolution: {integrity: sha512-d4lC8xfavMeBjzGr2vECC3fsGXziXZQyJxD868h2M/mBI3PwAuODxAkLkq5HYuvrPYcUtiLzsTo8U3PgX3Ocww==}
     engines: {node: '>=10.13.0'}
+
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
   framer-motion@12.23.22:
     resolution: {integrity: sha512-ZgGvdxXCw55ZYvhoZChTlG6pUuehecgvEAJz0BHoC5pQKW1EC5xf1Mul1ej5+ai+pVY0pylyFfdl45qnM1/GsA==}
@@ -1047,6 +1053,8 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.2.3
+
+  fflate@0.8.2: {}
 
   framer-motion@12.23.22(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:

@@ -4,7 +4,7 @@ import {
   useIsomorphicLayoutEffect,
 } from "$/hooks/useIsomorphicLayoutEffect";
 
-export interface SvgSize {
+interface SvgSize {
   width: number;
   height: number;
 }

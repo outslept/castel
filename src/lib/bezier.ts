@@ -1,4 +1,4 @@
-export type Bezier = readonly [number, number, number, number];
+import { BezierDefinition } from "motion";
 
 export const NAMED = {
   linear: [0, 0, 1, 1],
@@ -24,13 +24,13 @@ export const NAMED = {
   "ease-in-out-quint": [0.86, 0, 0.07, 1],
   "ease-in-out-expo": [1, 0, 0, 1],
   "ease-in-out-circ": [0.785, 0.135, 0.15, 0.86],
-} as const satisfies Record<string, Bezier>;
+} as const;
 
 export type NamedEasing = keyof typeof NAMED;
 
 const NUM_RE = /[+-]?(?:\d*\.)?\d+(?:e[+-]?\d+)?/gi;
 
-export function parseCurve(input: string): Bezier | null {
+export function parseCurve(input: string): BezierDefinition | null {
   const s = input.trim().toLowerCase();
   if (!s) return null;
   if (s in NAMED) return NAMED[s as NamedEasing];
@@ -38,37 +38,27 @@ export function parseCurve(input: string): Bezier | null {
   if (!nums || nums.length < 4) return null;
   const [x1, y1, x2, y2] = nums.slice(0, 4).map(Number);
   if (![x1, y1, x2, y2].every(Number.isFinite)) return null;
-  return bezier(x1, y1, x2, y2);
+  return bezier(clamp01(x1), y1, clamp01(x2), y2);
 }
 
-export function bezier(x1: number, y1: number, x2: number, y2: number): Bezier {
-  return [x1, y1, x2, y2] as const;
+export function bezier(x1: number, y1: number, x2: number, y2: number): BezierDefinition {
+  return [x1, y1, x2, y2];
 }
 
 export function toFixed3(n: number): number {
   return Math.round(n * 1000) / 1000;
 }
 
-export function formatCss(curve: Bezier): string {
+export function formatCss(curve: BezierDefinition): string {
   const [x1, y1, x2, y2] = curve;
   return `cubic-bezier(${toFixed3(x1)}, ${toFixed3(y1)}, ${toFixed3(x2)}, ${toFixed3(y2)})`;
 }
 
-export function formatArray(curve: Bezier): string {
+export function formatArray(curve: BezierDefinition): string {
   const [x1, y1, x2, y2] = curve;
   return `[${toFixed3(x1)}, ${toFixed3(y1)}, ${toFixed3(x2)}, ${toFixed3(y2)}]`;
 }
 
 export function clamp01(n: number): number {
   return Math.max(0, Math.min(1, n));
-}
-
-export function progress(min: number, max: number, value: number): number {
-  const d = max - min;
-  if (d === 0) return 0;
-  return clamp01((value - min) / d);
-}
-
-export function eqCurve(a: Bezier, b: Bezier): boolean {
-  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
 }

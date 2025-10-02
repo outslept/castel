@@ -1,11 +1,12 @@
 "use client";
-
 import { createContext, useContext, useMemo, useState, useEffect } from "react";
-import { NAMED, formatCss, type Bezier } from "$/lib/bezier";
+import { NAMED } from "$/lib/bezier";
+import { encodeState, decodeState } from "$/lib/hash";
+import { BezierDefinition } from "motion";
 
 type CurveContextValue = {
-  curve: Bezier;
-  setCurve: (c: Bezier) => void;
+  curve: BezierDefinition;
+  setCurve: (c: BezierDefinition) => void;
   activePoint: 0 | 1 | null;
   setActivePoint: (n: 0 | 1 | null) => void;
   hoveredPoint: 0 | 1 | null;
@@ -19,19 +20,37 @@ export function CurveProvider({
   initial = NAMED.ease,
 }: {
   children: React.ReactNode;
-  initial?: Bezier;
+  initial?: BezierDefinition;
 }) {
-  const [curve, setCurve] = useState<Bezier>(initial);
+  const [curve, setCurve] = useState<BezierDefinition>(initial);
   const [activePoint, setActivePoint] = useState<0 | 1 | null>(null);
   const [hoveredPoint, setHoveredPoint] = useState<0 | 1 | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const q = new URLSearchParams(window.location.search);
-    q.set("c", formatCss(curve));
-    const url = `${window.location.pathname}?${q.toString()}`;
-    window.history.replaceState({}, "", url);
+    const decoded = decodeState(window.location.hash);
+    if (decoded) setCurve(decoded.c);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const id = window.setTimeout(() => {
+      const payload = encodeState({ c: curve }, true);
+      const url = `${window.location.pathname}${window.location.search}#${payload}`;
+      window.history.replaceState(null, "", url);
+    }, 120);
+    return () => window.clearTimeout(id);
   }, [curve]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onHash = () => {
+      const decoded = decodeState(window.location.hash);
+      if (decoded) setCurve(decoded.c);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -45,9 +64,7 @@ export function CurveProvider({
     [curve, activePoint, hoveredPoint],
   );
 
-  return (
-    <CurveContext.Provider value={value}>{children}</CurveContext.Provider>
-  );
+  return <CurveContext.Provider value={value}>{children}</CurveContext.Provider>;
 }
 
 export function useCurve(): CurveContextValue {

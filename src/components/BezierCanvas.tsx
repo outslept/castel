@@ -1,5 +1,4 @@
 "use client";
-
 import { useMemo, useRef } from "react";
 import { EasingCurve } from "./EasingCurve";
 import { ControlPoint } from "$/components/ControlPoint";
@@ -8,40 +7,23 @@ import { useCurve } from "$/contexts/curve";
 import { useBezierDrag } from "$/hooks/useBezierDrag";
 import { CanvasGrid } from "$/components/CanvasGrid";
 import { useSvgSize } from "$/hooks/useSvgSize";
+import { bezier, clamp01 } from "$/lib/bezier";
 
 type Size = { width: number; height: number };
-type Bounds = {
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
-  w: number;
-  h: number;
-};
+type Bounds = { left: number; right: number; top: number; bottom: number; w: number; h: number };
 
 const VB: Size = { width: 1000, height: 600 };
-const INSET_VB = 120;
-const INSET_PCT = 0.12;
+const INSET = 0.12;
 
 const boundsFrom = (size: Size, inset: number): Bounds => {
   const left = inset;
   const top = inset;
   const right = size.width - inset;
   const bottom = size.height - inset;
-  return {
-    left,
-    top,
-    right,
-    bottom,
-    w: Math.max(0, right - left),
-    h: Math.max(0, bottom - top),
-  };
+  return { left, top, right, bottom, w: Math.max(0, right - left), h: Math.max(0, bottom - top) };
 };
 
-const positionsFrom = (
-  bounds: Bounds,
-  curve: readonly [number, number, number, number],
-) => {
+const positionsFrom = (bounds: Bounds, curve: readonly [number, number, number, number]) => {
   const [x1, y1, x2, y2] = curve;
   return {
     x1: bounds.left + x1 * bounds.w,
@@ -52,73 +34,24 @@ const positionsFrom = (
 };
 
 export default function BezierCanvas() {
-  const {
-    curve,
-    setCurve,
-    activePoint,
-    setActivePoint,
-    hoveredPoint,
-    setHoveredPoint,
-  } = useCurve();
-
+  const { curve, setCurve, activePoint, setActivePoint, hoveredPoint, setHoveredPoint } = useCurve();
   const svgRef = useRef<SVGSVGElement>(null!);
   const size = useSvgSize(svgRef);
-  const insetPx = Math.round(size.width * INSET_PCT);
-
-  const bounds = useMemo(() => boundsFrom(VB, INSET_VB), []);
+  const insetPx = Math.round(size.width * INSET);
+  const bounds = useMemo(() => boundsFrom(VB, Math.round(VB.width * INSET)), []);
   const pos = useMemo(() => positionsFrom(bounds, curve), [bounds, curve]);
-
-  const startDrag = useBezierDrag({
-    svgRef,
-    inset: insetPx,
-    curve,
-    onChange: setCurve,
-    setActivePoint,
-  });
-
+  const startDrag = useBezierDrag({ svgRef, inset: insetPx, curve, onChange: setCurve, setActivePoint });
   const round3 = (n: number) => Math.round(n * 1000) / 1000;
-  const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 
   const onPointKeyDown = (index: 0 | 1) => (e: React.KeyboardEvent) => {
     const k = e.key;
-    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(k))
-      return;
-    const step = e.shiftKey
-      ? 0.05
-      : e.altKey || e.metaKey || e.ctrlKey
-        ? 0.005
-        : 0.01;
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(k)) return;
+    const step = e.shiftKey ? 0.05 : e.altKey || e.metaKey || e.ctrlKey ? 0.005 : 0.01;
     const [x1, y1, x2, y2] = curve;
     const next: [number, number, number, number] =
       index === 0
-        ? [
-            clamp01(
-              k === "ArrowLeft"
-                ? x1 - step
-                : k === "ArrowRight"
-                  ? x1 + step
-                  : x1,
-            ),
-            round3(
-              k === "ArrowUp" ? y1 + step : k === "ArrowDown" ? y1 - step : y1,
-            ),
-            x2,
-            y2,
-          ]
-        : [
-            x1,
-            y1,
-            clamp01(
-              k === "ArrowLeft"
-                ? x2 - step
-                : k === "ArrowRight"
-                  ? x2 + step
-                  : x2,
-            ),
-            round3(
-              k === "ArrowUp" ? y2 + step : k === "ArrowDown" ? y2 - step : y2,
-            ),
-          ];
+        ? [clamp01(k === "ArrowLeft" ? x1 - step : k === "ArrowRight" ? x1 + step : x1), round3(k === "ArrowUp" ? y1 + step : k === "ArrowDown" ? y1 - step : y1), x2, y2]
+        : [x1, y1, clamp01(k === "ArrowLeft" ? x2 - step : k === "ArrowRight" ? x2 + step : x2), round3(k === "ArrowUp" ? y2 + step : k === "ArrowDown" ? y2 - step : y2)];
     setCurve(next);
     setActivePoint(index);
     e.preventDefault();
@@ -139,23 +72,8 @@ export default function BezierCanvas() {
       role="img"
       aria-label="Cubic Bézier editor"
     >
-      <CanvasGrid
-        left={bounds.left}
-        top={bounds.top}
-        right={bounds.right}
-        bottom={bounds.bottom}
-      />
-
-      <EasingCurve
-        curve={curve}
-        width={VB.width}
-        height={VB.height}
-        left={bounds.left}
-        top={bounds.top}
-        right={bounds.right}
-        bottom={bounds.bottom}
-      />
-
+      <CanvasGrid left={bounds.left} top={bounds.top} right={bounds.right} bottom={bounds.bottom} />
+      <EasingCurve curve={curve} width={VB.width} height={VB.height} left={bounds.left} top={bounds.top} right={bounds.right} bottom={bounds.bottom} />
       <line
         className="stroke-muted-foreground/30 transition-[stroke-width] duration-150 ease-out"
         strokeWidth={activePoint === 0 ? 2.5 : 2}
@@ -176,12 +94,12 @@ export default function BezierCanvas() {
         x2={pos.x2}
         y2={pos.y2}
       />
-
       <ResetAnchor
         x={bounds.left}
         y={bounds.bottom}
         active={activePoint === 0}
         onPointerDown={startDrag(0, { resetHandle: true })}
+        onReset={() => setCurve(bezier(0, 0, curve[2], curve[3]))}
         label="Reset P1"
       />
       <ResetAnchor
@@ -189,9 +107,9 @@ export default function BezierCanvas() {
         y={bounds.top}
         active={activePoint === 1}
         onPointerDown={startDrag(1, { resetHandle: true })}
+        onReset={() => setCurve(bezier(curve[0], curve[1], 1, 1))}
         label="Reset P2"
       />
-
       <g>
         <ControlPoint
           x={pos.x1}
@@ -222,20 +140,12 @@ export default function BezierCanvas() {
           onBlur={() => setActivePoint(null)}
         />
       </g>
-
       <text
         x={pos.x1}
         y={labelY(pos.y1)}
         className="fill-primary text-xs font-medium pointer-events-none select-none transition-all duration-150 ease-out"
         textAnchor="middle"
-        style={{
-          opacity: hoveredPoint === 0 || activePoint === 0 ? 1 : 0,
-          transform:
-            hoveredPoint === 0 || activePoint === 0
-              ? "scale(1)"
-              : "scale(0.93)",
-          transformOrigin: "center",
-        }}
+        style={{ opacity: hoveredPoint === 0 || activePoint === 0 ? 1 : 0, transform: hoveredPoint === 0 || activePoint === 0 ? "scale(1)" : "scale(0.93)", transformOrigin: "center" }}
       >
         P1
       </text>
@@ -244,14 +154,7 @@ export default function BezierCanvas() {
         y={labelY(pos.y2)}
         className="fill-primary text-xs font-medium pointer-events-none select-none transition-all duration-150 ease-out"
         textAnchor="middle"
-        style={{
-          opacity: hoveredPoint === 1 || activePoint === 1 ? 1 : 0,
-          transform:
-            hoveredPoint === 1 || activePoint === 1
-              ? "scale(1)"
-              : "scale(0.93)",
-          transformOrigin: "center",
-        }}
+        style={{ opacity: hoveredPoint === 1 || activePoint === 1 ? 1 : 0, transform: hoveredPoint === 1 || activePoint === 1 ? "scale(1)" : "scale(0.93)", transformOrigin: "center" }}
       >
         P2
       </text>

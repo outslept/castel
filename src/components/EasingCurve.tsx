@@ -1,9 +1,9 @@
 "use client";
 
-import type { Bezier } from "$/lib/bezier";
+import { BezierDefinition } from "motion";
 
-export type EasingCurveProps = {
-  curve: Bezier;
+type EasingCurveProps = {
+  curve: BezierDefinition;
   width: number;
   height: number;
   left?: number;
