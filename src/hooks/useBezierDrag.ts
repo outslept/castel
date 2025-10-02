@@ -39,9 +39,21 @@ export function useBezierDrag({
         const rect = svgRef.current?.getBoundingClientRect();
         if (!rect) return;
 
+        const minX = rect.left + inset;
+        const maxX = rect.right - inset;
+        const minY = rect.top + inset;
+        const maxY = rect.bottom - inset;
+
+        const startNX = progress(minX, maxX, startEvent.clientX);
+        const startNY = progress(maxY, minY, startEvent.clientY);
+        const curX = point === 0 ? start[0] : start[2];
+        const curY = point === 0 ? start[1] : start[3];
+        const offX = startNX - curX;
+        const offY = startNY - curY;
+
         const apply = (x: number, y: number) => {
-          const nx = clamp01(toFixed3(x));
-          const ny = toFixed3(y);
+          const nx = clamp01(toFixed3(x - offX));
+          const ny = clamp01(toFixed3(y - offY));
           const next =
             point === 0
               ? bezier(nx, ny, start[2], start[3])
@@ -51,8 +63,8 @@ export function useBezierDrag({
 
         const move = (e: PointerEvent) => {
           moved = true;
-          const x = progress(rect.left + inset, rect.right - inset, e.clientX);
-          const y = progress(rect.bottom - inset, rect.top + inset, e.clientY);
+          const x = progress(minX, maxX, e.clientX);
+          const y = progress(maxY, minY, e.clientY);
           apply(x, y);
         };
 

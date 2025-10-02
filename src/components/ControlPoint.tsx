@@ -1,7 +1,7 @@
+"use client";
 import { forwardRef } from "react";
 
 type CircleProps = React.ComponentPropsWithoutRef<"circle">;
-
 type ControlPointProps = Omit<CircleProps, "cx" | "cy" | "r"> & {
   x: number;
   y: number;
@@ -27,14 +27,9 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
     ref,
   ) => {
     const r = active ? 13 : hovered ? 11.5 : 10;
+
     return (
-      <g
-        className={`
-          transform origin-center
-          transition-transform duration-[160ms] ease-out
-          ${hovered || active ? "scale-100" : "scale-95"}
-        `}
-      >
+      <g>
         <circle
           ref={ref}
           r={24}
@@ -50,8 +45,8 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
             fill-transparent stroke-transparent stroke-2
             pointer-events-auto
             focus-visible:stroke-ring
-            block
-            [&_svg]:coarse:hidden
+            block [@media(pointer:coarse)]:hidden
+            cursor-grab
           "
           {...rest}
         />
@@ -64,24 +59,24 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
           className="
             fill-transparent stroke-transparent stroke-2
             pointer-events-auto
-            hidden
-            [&_svg]:coarse:block
+            hidden [@media(pointer:coarse)]:block
+            cursor-grab
           "
         />
-
         <circle
           r={hovered || active ? 20 : 0}
           cx={x}
           cy={y}
-          className={`
+          className="
             fill-primary
-            ${hovered || active ? "opacity-[0.08]" : "opacity-0"}
             transition-opacity duration-150 ease-out
-          `}
+          "
+          style={{
+            opacity: hovered || active ? 0.08 : 0,
+            pointerEvents: "none",
+          }}
           aria-hidden="true"
-          style={{ pointerEvents: "none" }}
         />
-
         <circle
           r={r}
           cx={x}
@@ -90,7 +85,7 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
           strokeWidth={2}
           aria-hidden="true"
           style={{
-            transition: "r 160ms var(--ease-out)",
+            transition: "r 160ms var(--ease-out, cubic-bezier(0,0,0.58,1))",
             pointerEvents: "none",
           }}
         />
@@ -98,4 +93,5 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
     );
   },
 );
+
 ControlPoint.displayName = "ControlPoint";

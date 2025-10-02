@@ -1,3 +1,5 @@
+"use client";
+
 import { useCurve } from "$/contexts/curve";
 
 export default function CoordinatesBadge() {

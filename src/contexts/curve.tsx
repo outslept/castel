@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState, useEffect } from "react";
-import { NAMED, parseCurve, formatCss, type Bezier } from "$/lib/bezier";
+import { NAMED, formatCss, type Bezier } from "$/lib/bezier";
 
 type CurveContextValue = {
   curve: Bezier;
@@ -14,16 +14,14 @@ type CurveContextValue = {
 
 const CurveContext = createContext<CurveContextValue | null>(null);
 
-function initialCurve(): Bezier {
-  if (typeof window === "undefined") return NAMED.ease;
-  const p = new URLSearchParams(window.location.search);
-  const raw = p.get("c") ?? p.get("curve");
-  const parsed = raw ? parseCurve(raw) : null;
-  return parsed ?? NAMED.ease;
-}
-
-export function CurveProvider({ children }: { children: React.ReactNode }) {
-  const [curve, setCurve] = useState<Bezier>(initialCurve);
+export function CurveProvider({
+  children,
+  initial = NAMED.ease,
+}: {
+  children: React.ReactNode;
+  initial?: Bezier;
+}) {
+  const [curve, setCurve] = useState<Bezier>(initial);
   const [activePoint, setActivePoint] = useState<0 | 1 | null>(null);
   const [hoveredPoint, setHoveredPoint] = useState<0 | 1 | null>(null);
 
@@ -47,9 +45,7 @@ export function CurveProvider({ children }: { children: React.ReactNode }) {
     [curve, activePoint, hoveredPoint],
   );
 
-  return (
-    <CurveContext.Provider value={value}>{children}</CurveContext.Provider>
-  );
+  return <CurveContext.Provider value={value}>{children}</CurveContext.Provider>;
 }
 
 export function useCurve(): CurveContextValue {
