@@ -2,6 +2,7 @@
 import { useTheme } from "next-themes";
 import { Moon, Sun, Laptop } from "lucide-react";
 import { useEffect, useState } from "react";
+import { cn } from "$/lib/utils";
 
 export function ThemeToggle() {
   const { theme, setTheme, systemTheme } = useTheme();
@@ -17,40 +18,42 @@ export function ThemeToggle() {
         type="button"
         aria-label="System"
         onClick={() => setTheme("system")}
-        className={[
+        className={cn(
           "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
           theme === "system"
             ? "bg-primary text-primary-foreground"
-            : "hover:bg-accent hover:text-accent-foreground",
-        ].join(" ")}
+            : "hover:bg-accent hover:text-accent-foreground"
+        )}
         title="System"
       >
         <Laptop className="h-4 w-4" />
       </button>
+
       <button
         type="button"
         aria-label="Light"
         onClick={() => setTheme("light")}
-        className={[
+        className={cn(
           "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
           current === "light" && theme !== "system"
             ? "bg-primary text-primary-foreground"
-            : "hover:bg-accent hover:text-accent-foreground",
-        ].join(" ")}
+            : "hover:bg-accent hover:text-accent-foreground"
+        )}
         title="Light"
       >
         <Sun className="h-4 w-4" />
       </button>
+
       <button
         type="button"
         aria-label="Dark"
         onClick={() => setTheme("dark")}
-        className={[
+        className={cn(
           "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
           current === "dark" && theme !== "system"
             ? "bg-primary text-primary-foreground"
-            : "hover:bg-accent hover:text-accent-foreground",
-        ].join(" ")}
+            : "hover:bg-accent hover:text-accent-foreground"
+        )}
         title="Dark"
       >
         <Moon className="h-4 w-4" />

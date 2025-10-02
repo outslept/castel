@@ -3,6 +3,7 @@ import { Autocomplete } from "@base-ui-components/react/autocomplete";
 import { useMemo } from "react";
 import { NAMED, formatCss, type NamedEasing } from "$/lib/bezier";
 import { BezierDefinition } from "motion";
+import { cn } from "$/lib/utils";
 
 type Preset = {
   id: string;
@@ -102,7 +103,7 @@ export function PresetAutocomplete({
   const shouldRenderPopup = value.trim() !== "";
 
   return (
-    <div className={["w-full", className ?? ""].join(" ")}>
+    <div className={cn("w-full", className)}>
       <Autocomplete.Root
         items={items}
         value={value}
@@ -121,13 +122,13 @@ export function PresetAutocomplete({
           {label}
           <Autocomplete.Input
             placeholder={placeholder}
-            className={[
+            className={cn(
               "h-10 w-full max-w-[620px] rounded-lg border border-border",
               "bg-background px-3 text-base text-foreground",
               "placeholder:text-muted-foreground/70",
               "focus:outline-none focus:ring-2 focus:ring-ring",
-              inputClassName ?? "",
-            ].join(" ")}
+              inputClassName
+            )}
             onBlur={onCommit}
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) onCommit?.();
@@ -153,13 +154,13 @@ export function PresetAutocomplete({
                       key={p.id}
                       value={p}
                       onClick={() => onPick(p.curve, p.css)}
-                      className={[
+                      className={cn(
                         "relative flex cursor-default items-center gap-3 py-2 pr-8 pl-3 text-sm leading-4 outline-none select-none",
                         "text-foreground",
                         "data-[highlighted]:relative data-[highlighted]:z-0",
                         "data-[highlighted]:text-foreground",
-                        "data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-2 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-md data-[highlighted]:before:bg-accent",
-                      ].join(" ")}
+                        "data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-2 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-md data-[highlighted]:before:bg-accent"
+                      )}
                     >
                       <MiniCurve curve={p.curve} />
                       <div className="min-w-0">
