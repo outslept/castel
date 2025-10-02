@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":semanticCommits"],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 5,
+
+  "platformAutomerge": true,
+  "automergeType": "pr",
+
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+
+  "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "groupName": "dev deps (minor/patch)"
+    },
+    {
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "next",
+        "next-themes",
+        "tailwindcss",
+        "tailwind-merge",
+        "@tailwindcss/postcss",
+        "tw-animate-css"
+      ],
+      "groupName": "frontend core (next/react/tailwind)"
+    }
+  ]
+}
