@@ -4,6 +4,7 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "$/lib/utils";
 
+const newLocal = "absolute h-4 w-4 transition-[transform,opacity,filter] duration-180 ease-[var(--ease-out)]";
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -27,7 +28,7 @@ export function ThemeToggle() {
     >
       <Sun
         className={cn(
-          "absolute h-4 w-4 transition-[transform,opacity,filter] duration-180 ease-[var(--ease-out)]",
+          newLocal,
           isDark
             ? "scale-90 opacity-0 blur-[2px] -rotate-45"
             : "scale-100 opacity-100 blur-0 rotate-0",
@@ -35,7 +36,7 @@ export function ThemeToggle() {
       />
       <Moon
         className={cn(
-          "absolute h-4 w-4 transition-[transform,opacity,filter] duration-180 ease-[var(--ease-out)]",
+          "absolute h-4 w-4 transition-[transform,opacity,filter] duration-180 ease-out",
           isDark
             ? "scale-100 opacity-100 blur-0 rotate-0"
             : "scale-90 opacity-0 blur-[2px] rotate-45",

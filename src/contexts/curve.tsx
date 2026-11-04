@@ -27,30 +27,23 @@ export function CurveProvider({
   const [hoveredPoint, setHoveredPoint] = useState<0 | 1 | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const decoded = decodeState(window.location.hash);
-    if (decoded) setCurve(decoded.c);
+    const syncFromHash = () => {
+      const decoded = decodeState(window.location.hash);
+      if (decoded) setCurve(decoded.c);
+    };
+    syncFromHash();
+    window.addEventListener("hashchange", syncFromHash);
+    return () => window.removeEventListener("hashchange", syncFromHash);
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
     const id = window.setTimeout(() => {
-      const payload = encodeState({ c: curve }, true);
+      const payload = encodeState({ c: curve });
       const url = `${window.location.pathname}${window.location.search}#${payload}`;
       window.history.replaceState(null, "", url);
     }, 120);
     return () => window.clearTimeout(id);
   }, [curve]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onHash = () => {
-      const decoded = decodeState(window.location.hash);
-      if (decoded) setCurve(decoded.c);
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
 
   const value = useMemo(
     () => ({

@@ -5,15 +5,15 @@ import { OptionsEditor } from "$/components/OptionsEditor";
 import BezierCurveEditor from "$/components/BezierCurveEditor";
 import { BezierDefinition } from "motion";
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams?: { c?: string; curve?: string };
+  searchParams: Promise<{ c?: string; curve?: string }>;
 }) {
-  const raw = searchParams?.c ?? searchParams?.curve;
-  const initial: BezierDefinition = raw
-    ? (parseCurve(raw) ?? NAMED["ease-out-quint"])
-    : NAMED["ease-out-quint"];
+  const { c, curve } = await searchParams;
+  const raw = c ?? curve;
+  const initial: BezierDefinition =
+    (raw && parseCurve(raw)) || NAMED["ease-out-quint"];
 
   return (
     <CurveProvider initial={initial}>

@@ -1,25 +1,20 @@
 "use client";
-
-import { BezierDefinition } from "motion";
+import { type BezierDefinition } from "motion";
 
 type EasingCurveProps = {
   curve: BezierDefinition;
-  width: number;
-  height: number;
-  left?: number;
-  top?: number;
-  right?: number;
-  bottom?: number;
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
 };
 
 export function EasingCurve({
   curve,
-  width,
-  height,
-  left = 0,
-  top = 0,
-  right = width,
-  bottom = height,
+  left,
+  top,
+  right,
+  bottom,
 }: EasingCurveProps) {
   const w = right - left;
   const h = bottom - top;

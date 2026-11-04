@@ -1,9 +1,13 @@
 "use client";
 import { Autocomplete } from "@base-ui-components/react/autocomplete";
 import { useMemo } from "react";
-import { NAMED, formatCss, type NamedEasing } from "$/lib/bezier";
-import { BezierDefinition } from "motion";
+import {
+  NAMED,
+  formatCss,
+  type NamedEasing,
+} from "$/lib/bezier";
 import { cn } from "$/lib/utils";
+import { BezierDefinition } from "motion";
 
 type Preset = {
   id: string;
@@ -12,28 +16,12 @@ type Preset = {
   css: string;
 };
 
-function MiniCurve({
-  curve,
-  width = 56,
-  height = 32,
-  pad = 4,
-}: {
-  curve: BezierDefinition;
-  width?: number;
-  height?: number;
-  pad?: number;
-}) {
-  const left = pad;
-  const top = pad;
-  const right = width - pad;
-  const bottom = height - pad;
-  const w = right - left;
-  const h = bottom - top;
+function MiniCurve({ curve }: { curve: BezierDefinition }) {
   const [x1, y1, x2, y2] = curve;
-  const path = `M ${left},${bottom} C ${left + x1 * w},${bottom - y1 * h} ${left + x2 * w},${bottom - y2 * h} ${right},${top}`;
+  const path = `M 4,28 C ${4 + x1 * 48},${28 - y1 * 24} ${4 + x2 * 48},${28 - y2 * 24} 52,4`;
   return (
     <svg
-      viewBox={`0 0 ${width} ${height}`}
+      viewBox="0 0 56 32"
       className="h-7 w-12 shrink-0 rounded border border-border/60 bg-secondary/50"
       aria-hidden
     >
@@ -49,22 +37,17 @@ function MiniCurve({
   );
 }
 
+const newLocal = "data-ending-style:scale-95 data-[ending-style]:opacity-0";
 export function PresetAutocomplete({
   value,
   onValueChange,
   onPick,
   onCommit,
-  className,
-  inputClassName,
-  placeholder = "cubic-bezier(0.23, 1, 0.32, 1) or preset name",
 }: {
   value: string;
   onValueChange: (v: string) => void;
   onPick: (curve: BezierDefinition, css: string) => void;
   onCommit?: () => void;
-  className?: string;
-  inputClassName?: string;
-  placeholder?: string;
 }) {
   const items = useMemo<Preset[]>(
     () =>
@@ -82,7 +65,7 @@ export function PresetAutocomplete({
   const shouldRenderPopup = value.trim() !== "";
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className="w-full">
       <Autocomplete.Root
         items={items}
         value={value}
@@ -99,15 +82,8 @@ export function PresetAutocomplete({
       >
         <Autocomplete.Input
           aria-label="CSS easing function or preset"
-          placeholder={placeholder}
-          className={cn(
-            "h-9 w-full rounded-xl border border-border bg-surface px-3",
-            "font-mono text-xs text-foreground tabular-nums",
-            "placeholder:text-muted-foreground/60",
-            "transition-colors duration-150 ease-out",
-            "focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring",
-            inputClassName,
-          )}
+          placeholder="cubic-bezier(0.23, 1, 0.32, 1) or preset name"
+          className="h-9 w-full rounded-xl border border-border bg-surface px-3 font-mono text-xs text-foreground tabular-nums placeholder:text-muted-foreground/60 transition-colors duration-150 ease-out focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring"
           onBlur={onCommit}
           onKeyDown={(e) => {
             if (e.key === "Enter") onCommit?.();
@@ -123,11 +99,11 @@ export function PresetAutocomplete({
             >
               <Autocomplete.Popup
                 className={cn(
-                  "z-50 w-[var(--anchor-width)] max-h-[18rem] overflow-y-auto overscroll-contain",
+                  "z-50 w-(--anchor-width) max-h-72 overflow-y-auto overscroll-contain",
                   "rounded-xl border border-border bg-popover/95 p-1 text-popover-foreground shadow-lg backdrop-blur-md",
-                  "origin-[var(--transform-origin)] transition-[transform,opacity] duration-150 ease-[var(--ease-out)]",
-                  "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
-                  "data-[ending-style]:scale-95 data-[ending-style]:opacity-0",
+                  "origin-(--transform-origin) transition-[transform,opacity] duration-150 ease-out",
+                  "data-starting-style:scale-95 data-starting-style:opacity-0",
+                  newLocal,
                 )}
               >
                 <Autocomplete.Empty className="px-3 py-2 text-xs text-muted-foreground empty:m-0 empty:p-0">
@@ -140,10 +116,7 @@ export function PresetAutocomplete({
                       key={p.id}
                       value={p}
                       onClick={() => onPick(p.curve, p.css)}
-                      className={cn(
-                        "flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-xs outline-none select-none",
-                        "text-foreground data-[highlighted]:bg-accent",
-                      )}
+                      className="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-xs outline-none select-none text-foreground data-highlighted:bg-accent"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <MiniCurve curve={p.curve} />

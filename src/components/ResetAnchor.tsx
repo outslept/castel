@@ -32,7 +32,7 @@ export function ResetAnchor({
             onReset();
           }
         }}
-        className="fill-transparent stroke-transparent stroke-2 pointer-events-auto focus-visible:stroke-ring block [@media(pointer:coarse)]:hidden cursor-pointer"
+        className="fill-transparent stroke-transparent stroke-2 pointer-events-auto focus-visible:stroke-ring block pointer-coarse:hidden cursor-pointer"
       />
       <circle
         r={26}
@@ -40,13 +40,13 @@ export function ResetAnchor({
         cy={y}
         tabIndex={-1}
         aria-hidden="true"
-        className="fill-transparent stroke-transparent stroke-2 pointer-events-auto hidden [@media(pointer:coarse)]:block"
+        className="fill-transparent stroke-transparent stroke-2 pointer-events-auto hidden pointer-coarse:block"
       />
       <circle
         r={6}
         cx={x}
         cy={y}
-        className="fill-muted-foreground pointer-events-none [transform-box:fill-box] origin-center transition-[transform,opacity] duration-160 ease-[var(--ease-out)]"
+        className="fill-muted-foreground pointer-events-none transform-fill origin-center transition-[transform,opacity] duration-160 ease-out"
         style={{
           opacity: active ? 0.75 : 0.45,
           transform: active ? "scale(1.45)" : "scale(1)",

@@ -20,7 +20,7 @@ function BlurIcon({
     <span className="relative inline-flex h-3.5 w-3.5 items-center justify-center">
       <span
         className={cn(
-          "absolute inset-0 flex items-center justify-center transition-[transform,opacity,filter] duration-160 ease-[var(--ease-out)]",
+          "absolute inset-0 flex items-center justify-center transition-[transform,opacity,filter] duration-160 ease-out",
           copied
             ? "scale-90 opacity-0 blur-[2px]"
             : "scale-100 opacity-100 blur-0",
@@ -30,7 +30,7 @@ function BlurIcon({
       </span>
       <span
         className={cn(
-          "absolute inset-0 flex items-center justify-center text-emerald-500 transition-[transform,opacity,filter] duration-160 ease-[var(--ease-out)]",
+          "absolute inset-0 flex items-center justify-center text-emerald-500 transition-[transform,opacity,filter] duration-160 ease-out",
           copied
             ? "scale-100 opacity-100 blur-0"
             : "scale-90 opacity-0 blur-[2px]",
