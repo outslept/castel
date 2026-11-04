@@ -4,7 +4,6 @@ import { EditorLayout } from "$/components/EditorLayout";
 import { OptionsEditor } from "$/components/OptionsEditor";
 import BezierCurveEditor from "$/components/BezierCurveEditor";
 import { BezierDefinition } from "motion";
-import { ThemeToggle } from "$/components/ThemeToggle";
 
 export default function Page({
   searchParams,
@@ -13,21 +12,16 @@ export default function Page({
 }) {
   const raw = searchParams?.c ?? searchParams?.curve;
   const initial: BezierDefinition = raw
-    ? (parseCurve(raw) ?? NAMED.ease)
-    : NAMED.ease;
+    ? (parseCurve(raw) ?? NAMED["ease-out-quint"])
+    : NAMED["ease-out-quint"];
 
   return (
     <CurveProvider initial={initial}>
-      <main className="relative grid min-h-svh place-items-center overflow-hidden bg-background text-foreground px-4">
-        <div className="relative w-full max-w-6xl rounded-2xl border border-border/60 bg-card/70 backdrop-blur-md shadow-lg transition-[box-shadow,transform] duration-300 p-5 md:p-6">
-          <div className="absolute right-3 top-3 z-20">
-            <ThemeToggle />
-          </div>
-          <EditorLayout
-            left={<OptionsEditor />}
-            right={<BezierCurveEditor />}
-          />
-        </div>
+      <main className="grid min-h-svh place-items-center bg-background text-foreground px-4 py-6">
+        <EditorLayout
+          left={<OptionsEditor />}
+          right={<BezierCurveEditor />}
+        />
       </main>
     </CurveProvider>
   );

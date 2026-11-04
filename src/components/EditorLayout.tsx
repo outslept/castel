@@ -8,11 +8,9 @@ export function EditorLayout({
   right: React.ReactNode;
 }) {
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(360px,660px),minmax(480px,1fr)]">
-      <div className="space-y-6">{left}</div>
-      <div className="rounded-xl border border-border/60 bg-card/80 p-0 md:p-4">
-        {right}
-      </div>
+    <div className="studio-shell w-full max-w-2xl rounded-2xl border border-border bg-card p-3 sm:p-4 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.07)] dark:shadow-[0_24px_60px_-12px_rgba(0,0,0,0.6)] space-y-3">
+      {left}
+      {right}
     </div>
   );
 }

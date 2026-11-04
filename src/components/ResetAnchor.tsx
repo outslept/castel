@@ -16,7 +16,7 @@ export function ResetAnchor({
   label,
 }: Props) {
   return (
-    <g className="transform origin-center will-change-transform">
+    <g>
       <title>{label}</title>
       <circle
         r={18}
@@ -32,7 +32,7 @@ export function ResetAnchor({
             onReset();
           }
         }}
-        className="fill-transparent stroke-transparent stroke-2 pointer-events-auto focus-visible:stroke-ring block [@media(pointer:coarse)]:hidden"
+        className="fill-transparent stroke-transparent stroke-2 pointer-events-auto focus-visible:stroke-ring block [@media(pointer:coarse)]:hidden cursor-pointer"
       />
       <circle
         r={26}
@@ -43,13 +43,13 @@ export function ResetAnchor({
         className="fill-transparent stroke-transparent stroke-2 pointer-events-auto hidden [@media(pointer:coarse)]:block"
       />
       <circle
-        r={active ? 9 : 6}
+        r={6}
         cx={x}
         cy={y}
-        className="fill-muted-foreground opacity-[0.45]"
+        className="fill-muted-foreground pointer-events-none [transform-box:fill-box] origin-center transition-[transform,opacity] duration-160 ease-[var(--ease-out)]"
         style={{
-          transition: "r 160ms var(--ease-out, cubic-bezier(0,0,0.58,1))",
-          pointerEvents: "none",
+          opacity: active ? 0.75 : 0.45,
+          transform: active ? "scale(1.45)" : "scale(1)",
         }}
         aria-hidden="true"
       />

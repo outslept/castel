@@ -1,6 +1,7 @@
 "use client";
 
 import { useCurve } from "$/contexts/curve";
+import { cn } from "$/lib/utils";
 
 export default function CoordinatesBadge() {
   const { curve, activePoint, hoveredPoint } = useCurve();
@@ -9,16 +10,27 @@ export default function CoordinatesBadge() {
   const p2 = activePoint === 1 || hoveredPoint === 1;
 
   return (
-    <div className="absolute right-2 top-2 z-10 flex gap-3 rounded-lg border border-border/50 bg-card/95 px-3 py-1.5 font-mono text-xs shadow-sm backdrop-blur-sm">
+    <div className="pointer-events-none absolute right-2.5 top-2.5 z-10 flex items-center gap-2 rounded-xl border border-border bg-card/90 px-2.5 py-1 font-mono text-[11px] tabular-nums shadow-2xs backdrop-blur-md">
       <span
-        className={`transition-colors ${p1 ? "text-primary font-medium" : "text-muted-foreground"}`}
+        className={cn(
+          "rounded px-1.5 py-0.5 transition-colors duration-150",
+          p1
+            ? "bg-secondary text-foreground font-medium"
+            : "text-muted-foreground",
+        )}
       >
-        P1: ({x1.toFixed(3)}, {y1.toFixed(3)})
+        P1 ({x1.toFixed(2)}, {y1.toFixed(2)})
       </span>
+      <span className="text-border">/</span>
       <span
-        className={`transition-colors ${p2 ? "text-primary font-medium" : "text-muted-foreground"}`}
+        className={cn(
+          "rounded px-1.5 py-0.5 transition-colors duration-150",
+          p2
+            ? "bg-secondary text-foreground font-medium"
+            : "text-muted-foreground",
+        )}
       >
-        P2: ({x2.toFixed(3)}, {y2.toFixed(3)})
+        P2 ({x2.toFixed(2)}, {y2.toFixed(2)})
       </span>
     </div>
   );

@@ -26,7 +26,8 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
     },
     ref,
   ) => {
-    const r = active ? 13 : hovered ? 11.5 : 10;
+    const scale = active ? 1.25 : hovered ? 1.12 : 1;
+    const engaged = hovered || active;
 
     return (
       <g>
@@ -46,7 +47,7 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
             pointer-events-auto
             focus-visible:stroke-ring
             block [@media(pointer:coarse)]:hidden
-            cursor-grab
+            cursor-grab active:cursor-grabbing
           "
           {...rest}
         />
@@ -60,33 +61,29 @@ export const ControlPoint = forwardRef<SVGCircleElement, ControlPointProps>(
             fill-transparent stroke-transparent stroke-2
             pointer-events-auto
             hidden [@media(pointer:coarse)]:block
-            cursor-grab
+            cursor-grab active:cursor-grabbing
           "
         />
         <circle
-          r={hovered || active ? 20 : 0}
+          r={20}
           cx={x}
           cy={y}
-          className="
-            fill-primary
-            transition-opacity duration-150 ease-out
-          "
+          className="fill-primary pointer-events-none [transform-box:fill-box] origin-center transition-[transform,opacity] duration-160 ease-[var(--ease-out)]"
           style={{
-            opacity: hovered || active ? 0.08 : 0,
-            pointerEvents: "none",
+            opacity: engaged ? 0.12 : 0,
+            transform: engaged ? "scale(1)" : "scale(0.85)",
           }}
           aria-hidden="true"
         />
         <circle
-          r={r}
+          r={10}
           cx={x}
           cy={y}
-          className="fill-primary stroke-background"
-          strokeWidth={2}
+          className="fill-primary stroke-background pointer-events-none [transform-box:fill-box] origin-center transition-transform duration-160 ease-[var(--ease-out)]"
+          strokeWidth={2.25}
           aria-hidden="true"
           style={{
-            transition: "r 160ms var(--ease-out, cubic-bezier(0,0,0.58,1))",
-            pointerEvents: "none",
+            transform: `scale(${scale})`,
           }}
         />
       </g>

@@ -26,6 +26,11 @@ export function useBezierDrag({
   return useCallback(
     (point: PointIndex, opts?: StartOptions) =>
       (startEvent: React.PointerEvent<SVGCircleElement>) => {
+        const root = document.documentElement;
+        // Multi-touch protection: ignore secondary pointers while dragging
+        if (root.dataset.dragging === "true") return;
+
+        const activePointerId = startEvent.pointerId;
         const start: BezierDefinition = [
           curve[0],
           curve[1],
@@ -36,11 +41,15 @@ export function useBezierDrag({
         startEvent.preventDefault();
         startEvent.stopPropagation();
         setActivePoint(point);
-        startEvent.currentTarget.setPointerCapture?.(startEvent.pointerId);
-        const root = document.documentElement;
+        startEvent.currentTarget.setPointerCapture?.(activePointerId);
         root.dataset.dragging = "true";
+
         const rect = svgRef.current?.getBoundingClientRect();
-        if (!rect) return;
+        if (!rect) {
+          root.removeAttribute("data-dragging");
+          return;
+        }
+
         const minX = rect.left + inset;
         const maxX = rect.right - inset;
         const minY = rect.top + inset;
@@ -53,6 +62,7 @@ export function useBezierDrag({
         const curY = point === 0 ? start[1] : start[3];
         const offX = startNX - curX;
         const offY = startNY - curY;
+
         const apply = (x: number, y: number) => {
           const nextX = clamp01(toFixed3(x - offX));
           const nextY = toFixed3(y - offY);
@@ -62,11 +72,15 @@ export function useBezierDrag({
               : bezier(start[0], start[1], nextX, nextY),
           );
         };
+
         const move = (e: PointerEvent) => {
+          if (e.pointerId !== activePointerId) return;
           moved = true;
           apply(nx(e.clientX), ny(e.clientY));
         };
-        const end = () => {
+
+        const end = (e: PointerEvent) => {
+          if (e.pointerId !== activePointerId) return;
           if (!moved && opts?.resetHandle) {
             onChange(
               point === 0
@@ -80,6 +94,7 @@ export function useBezierDrag({
           document.removeEventListener("pointerup", end);
           document.removeEventListener("pointercancel", end);
         };
+
         document.addEventListener("pointermove", move);
         document.addEventListener("pointerup", end);
         document.addEventListener("pointercancel", end);

@@ -14,9 +14,9 @@ type Preset = {
 
 function MiniCurve({
   curve,
-  width = 88,
-  height = 48,
-  pad = 6,
+  width = 56,
+  height = 32,
+  pad = 4,
 }: {
   curve: BezierDefinition;
   width?: number;
@@ -31,36 +31,17 @@ function MiniCurve({
   const h = bottom - top;
   const [x1, y1, x2, y2] = curve;
   const path = `M ${left},${bottom} C ${left + x1 * w},${bottom - y1 * h} ${left + x2 * w},${bottom - y2 * h} ${right},${top}`;
-  const border = `${left},${top} ${left},${bottom} ${right},${bottom}`;
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className="h-11 w-[88px] shrink-0"
+      className="h-7 w-12 shrink-0 rounded border border-border/60 bg-secondary/50"
       aria-hidden
     >
-      <polyline
-        points={border}
-        fill="none"
-        stroke="currentColor"
-        opacity="0.35"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
       <path
         d={path}
         fill="none"
         stroke="currentColor"
-        opacity="0.18"
-        strokeWidth="7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d={path}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.75"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -75,8 +56,7 @@ export function PresetAutocomplete({
   onCommit,
   className,
   inputClassName,
-  label = "Preset or custom curve",
-  placeholder = 'e.g. "ease-in-out" or cubic-bezier(0.25, 0.1, 0.25, 1)',
+  placeholder = "cubic-bezier(0.23, 1, 0.32, 1) or preset name",
 }: {
   value: string;
   onValueChange: (v: string) => void;
@@ -84,7 +64,6 @@ export function PresetAutocomplete({
   onCommit?: () => void;
   className?: string;
   inputClassName?: string;
-  label?: string;
   placeholder?: string;
 }) {
   const items = useMemo<Preset[]>(
@@ -111,41 +90,48 @@ export function PresetAutocomplete({
         itemToStringValue={(p) => p.name}
         filter={(p, q) => {
           const query = q.trim().toLowerCase();
-          if (!query) return true;
+          if (!query || query.startsWith("cubic-bezier")) return true;
           return (
             p.name.toLowerCase().includes(query) ||
             p.css.toLowerCase().includes(query)
           );
         }}
       >
-        <label className="flex w-full flex-col gap-1 text-sm font-medium">
-          {label}
-          <Autocomplete.Input
-            placeholder={placeholder}
-            className={cn(
-              "h-10 w-full max-w-[620px] rounded-lg border border-border",
-              "bg-background px-3 text-base text-foreground",
-              "placeholder:text-muted-foreground/70",
-              "focus:outline-none focus:ring-2 focus:ring-ring",
-              inputClassName
-            )}
-            onBlur={onCommit}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) onCommit?.();
-            }}
-          />
-        </label>
+        <Autocomplete.Input
+          aria-label="CSS easing function or preset"
+          placeholder={placeholder}
+          className={cn(
+            "h-9 w-full rounded-xl border border-border bg-surface px-3",
+            "font-mono text-xs text-foreground tabular-nums",
+            "placeholder:text-muted-foreground/60",
+            "transition-colors duration-150 ease-out",
+            "focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring",
+            inputClassName,
+          )}
+          onBlur={onCommit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onCommit?.();
+          }}
+        />
 
         {shouldRenderPopup && (
           <Autocomplete.Portal>
             <Autocomplete.Positioner
-              className="outline-none"
-              sideOffset={8}
+              className="z-50 outline-none"
+              sideOffset={6}
               align="start"
             >
-              <Autocomplete.Popup className="z-50 w-[var(--anchor-width)] max-h-[min(var(--available-height),23rem)] max-w-[var(--available-width)] overflow-y-auto scroll-pt-2 scroll-pb-2 overscroll-contain rounded-lg border border-border bg-popover/95 text-popover-foreground shadow-md backdrop-blur-md">
-                <Autocomplete.Empty className="px-4 py-2 text-[0.925rem] leading-4 text-muted-foreground empty:m-0 empty:p-0">
-                  No matches.
+              <Autocomplete.Popup
+                className={cn(
+                  "z-50 w-[var(--anchor-width)] max-h-[18rem] overflow-y-auto overscroll-contain",
+                  "rounded-xl border border-border bg-popover/95 p-1 text-popover-foreground shadow-lg backdrop-blur-md",
+                  "origin-[var(--transform-origin)] transition-[transform,opacity] duration-150 ease-[var(--ease-out)]",
+                  "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+                  "data-[ending-style]:scale-95 data-[ending-style]:opacity-0",
+                )}
+              >
+                <Autocomplete.Empty className="px-3 py-2 text-xs text-muted-foreground empty:m-0 empty:p-0">
+                  Press Enter to apply custom curve.
                 </Autocomplete.Empty>
 
                 <Autocomplete.List>
@@ -155,20 +141,17 @@ export function PresetAutocomplete({
                       value={p}
                       onClick={() => onPick(p.curve, p.css)}
                       className={cn(
-                        "relative flex cursor-default items-center gap-3 py-2 pr-8 pl-3 text-sm leading-4 outline-none select-none",
-                        "text-foreground",
-                        "data-[highlighted]:relative data-[highlighted]:z-0",
-                        "data-[highlighted]:text-foreground",
-                        "data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-2 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-md data-[highlighted]:before:bg-accent"
+                        "flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-xs outline-none select-none",
+                        "text-foreground data-[highlighted]:bg-accent",
                       )}
                     >
-                      <MiniCurve curve={p.curve} />
-                      <div className="min-w-0">
-                        <div className="truncate font-medium">{p.name}</div>
-                        <div className="truncate text-xs text-muted-foreground">
-                          {p.css}
-                        </div>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <MiniCurve curve={p.curve} />
+                        <span className="truncate font-medium">{p.name}</span>
                       </div>
+                      <span className="shrink-0 font-mono text-[11px] text-muted-foreground tabular-nums">
+                        {p.curve.join(", ")}
+                      </span>
                     </Autocomplete.Item>
                   )}
                 </Autocomplete.List>

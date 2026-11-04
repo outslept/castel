@@ -10,8 +10,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bézier Curve Editor",
-  description: "Interactive cubic-bezier editor with live preview and sharing.",
+  title: "castel.",
+  description:
+    "A tactile cubic-bezier() editor with an axis-aligned motion preview and instant URL sharing.",
 };
 
 export default function RootLayout({

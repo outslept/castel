@@ -1,63 +1,46 @@
 "use client";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Laptop } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "$/lib/utils";
 
 export function ThemeToggle() {
-  const { theme, setTheme, systemTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
 
-  const current = theme === "system" ? (systemTheme ?? "light") : theme;
+  if (!mounted) {
+    return (
+      <div className="h-9 w-9 shrink-0 rounded-xl border border-border bg-surface" />
+    );
+  }
+
+  const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 px-1.5 py-1 shadow-sm backdrop-blur-md">
-      <button
-        type="button"
-        aria-label="System"
-        onClick={() => setTheme("system")}
+    <button
+      type="button"
+      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      title={isDark ? "Light theme" : "Dark theme"}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="btn-press relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-surface text-muted-foreground [@media(hover:hover)_and_(pointer:fine)]:hover:bg-accent [@media(hover:hover)_and_(pointer:fine)]:hover:text-foreground"
+    >
+      <Sun
         className={cn(
-          "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-          theme === "system"
-            ? "bg-primary text-primary-foreground"
-            : "hover:bg-accent hover:text-accent-foreground"
+          "absolute h-4 w-4 transition-[transform,opacity,filter] duration-180 ease-[var(--ease-out)]",
+          isDark
+            ? "scale-90 opacity-0 blur-[2px] -rotate-45"
+            : "scale-100 opacity-100 blur-0 rotate-0",
         )}
-        title="System"
-      >
-        <Laptop className="h-4 w-4" />
-      </button>
-
-      <button
-        type="button"
-        aria-label="Light"
-        onClick={() => setTheme("light")}
+      />
+      <Moon
         className={cn(
-          "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-          current === "light" && theme !== "system"
-            ? "bg-primary text-primary-foreground"
-            : "hover:bg-accent hover:text-accent-foreground"
+          "absolute h-4 w-4 transition-[transform,opacity,filter] duration-180 ease-[var(--ease-out)]",
+          isDark
+            ? "scale-100 opacity-100 blur-0 rotate-0"
+            : "scale-90 opacity-0 blur-[2px] rotate-45",
         )}
-        title="Light"
-      >
-        <Sun className="h-4 w-4" />
-      </button>
-
-      <button
-        type="button"
-        aria-label="Dark"
-        onClick={() => setTheme("dark")}
-        className={cn(
-          "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-          current === "dark" && theme !== "system"
-            ? "bg-primary text-primary-foreground"
-            : "hover:bg-accent hover:text-accent-foreground"
-        )}
-        title="Dark"
-      >
-        <Moon className="h-4 w-4" />
-      </button>
-    </div>
+      />
+    </button>
   );
 }

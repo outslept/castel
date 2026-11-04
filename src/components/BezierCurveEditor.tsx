@@ -1,74 +1,60 @@
 "use client";
-import { useMemo, useState } from "react";
-import CoordinatesBadge from "$/components/CoordinatesBadge";
 import BezierCanvas from "$/components/BezierCanvas";
 import { useCurve } from "$/contexts/curve";
-import { NAMED, formatCss, formatArray } from "$/lib/bezier";
-import { Copy, RotateCcw, Check } from "lucide-react";
+import { NAMED, type NamedEasing } from "$/lib/bezier";
 import { RotateOverlay } from "$/components/RotateOverlay";
-import { copyText } from "$/lib/clipboard";
+import { cn } from "$/lib/utils";
+
+const QUICK_PRESETS: Array<{ label: string; key: NamedEasing }> = [
+  { label: "out-quint", key: "ease-out-quint" },
+  { label: "out-expo", key: "ease-out-expo" },
+  { label: "in-out-quart", key: "ease-in-out-quart" },
+  { label: "in-out-cubic", key: "ease-in-out-cubic" },
+  { label: "ease", key: "ease" },
+  { label: "linear", key: "linear" },
+];
 
 export default function BezierCurveEditor() {
   const { curve, setCurve } = useCurve();
-  const [copied, setCopied] = useState<"css" | "array" | null>(null);
-  const css = useMemo(() => formatCss(curve), [curve]);
-
-  const copy = async (s: string, type: "css" | "array") => {
-    const ok = await copyText(s);
-    if (!ok) return;
-    setCopied(type);
-    setTimeout(() => setCopied(null), 1200);
-  };
-
-  const Toolbar = (
-    <div className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 px-1.5 py-1 backdrop-blur-md shadow-sm">
-      <button
-        type="button"
-        title="Copy CSS"
-        onClick={() => copy(css, "css")}
-        className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-      >
-        {copied === "css" ? (
-          <Check className="h-4 w-4" />
-        ) : (
-          <Copy className="h-4 w-4" />
-        )}
-        <span className="hidden md:inline">CSS</span>
-      </button>
-      <button
-        type="button"
-        title="Copy Array"
-        onClick={() => copy(formatArray(curve), "array")}
-        className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-      >
-        {copied === "array" ? (
-          <Check className="h-4 w-4" />
-        ) : (
-          <Copy className="h-4 w-4" />
-        )}
-        <span className="hidden md:inline">Array</span>
-      </button>
-      <button
-        type="button"
-        title="Reset to ease"
-        onClick={() => setCurve(NAMED.ease)}
-        className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-      >
-        <RotateCcw className="h-4 w-4" />
-        <span className="hidden md:inline">Reset</span>
-      </button>
-    </div>
-  );
 
   return (
-    <div className="relative">
+    <div className="space-y-2.5">
       <RotateOverlay />
-      <CoordinatesBadge />
-      <BezierCanvas />
-      <div className="absolute inset-0 z-20 pointer-events-none">
-        <div className="absolute bottom-3 right-3 pointer-events-auto">
-          {Toolbar}
+
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface/60">
+        <BezierCanvas />
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
+        <div className="flex flex-wrap items-center gap-1">
+          {QUICK_PRESETS.map(({ label, key }) => {
+            const target = NAMED[key];
+            const active =
+              target[0] === curve[0] &&
+              target[1] === curve[1] &&
+              target[2] === curve[2] &&
+              target[3] === curve[3];
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setCurve([...target])}
+                className={cn(
+                  "btn-press rounded-lg px-2.5 py-1 font-mono text-[11px]",
+                  active
+                    ? "bg-primary text-primary-foreground font-medium"
+                    : "text-muted-foreground [@media(hover:hover)_and_(pointer:fine)]:hover:bg-secondary [@media(hover:hover)_and_(pointer:fine)]:hover:text-foreground",
+                )}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
+
+        <span className="hidden sm:inline font-mono text-[11px] text-muted-foreground/70">
+          Click anchor to reset · Arrows to nudge
+        </span>
       </div>
     </div>
   );

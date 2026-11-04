@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { EasingCurve } from "./EasingCurve";
 import { ControlPoint } from "$/components/ControlPoint";
 import { ResetAnchor } from "$/components/ResetAnchor";
@@ -60,6 +60,9 @@ export default function BezierCanvas() {
     setHoveredPoint,
   } = useCurve();
   const svgRef = useRef<SVGSVGElement>(null!);
+  const easedDotRef = useRef<SVGCircleElement>(null);
+  const linearDotRef = useRef<SVGCircleElement>(null);
+
   const size = useSvgSize(svgRef);
   const insetPx = Math.round(size.width * INSET);
   const bounds = useMemo(
@@ -75,6 +78,39 @@ export default function BezierCanvas() {
     setActivePoint,
   });
   const round3 = (n: number) => Math.round(n * 1000) / 1000;
+
+  // Synchronized live motion runner aligned with the graph's X-axis
+  useEffect(() => {
+    const easedEl = easedDotRef.current;
+    const linearEl = linearDotRef.current;
+    if (!easedEl || !linearEl) return;
+
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const easing = `cubic-bezier(${curve[0]}, ${curve[1]}, ${curve[2]}, ${curve[3]})`;
+    const frames = [
+      { transform: "translateX(0px)" },
+      { transform: `translateX(${bounds.w}px)` },
+    ];
+
+    const trigger = () => {
+      easedEl.getAnimations().forEach((a) => a.cancel());
+      linearEl.getAnimations().forEach((a) => a.cancel());
+      easedEl.animate(frames, { duration: 650, easing, fill: "forwards" });
+      linearEl.animate(frames, {
+        duration: 650,
+        easing: "linear",
+        fill: "forwards",
+      });
+    };
+
+    trigger();
+    const id = window.setInterval(trigger, 1350);
+    return () => window.clearInterval(id);
+  }, [curve, bounds.w]);
 
   const onPointKeyDown = (index: 0 | 1) => (e: React.KeyboardEvent) => {
     const k = e.key;
@@ -122,26 +158,58 @@ export default function BezierCanvas() {
   };
 
   const labelY = (y: number) => {
-    const above = y - 16;
-    const minY = bounds.top + 14;
-    const maxY = bounds.bottom - 6;
+    const above = y - 20;
+    const minY = bounds.top + 18;
+    const maxY = bounds.bottom - 10;
     return Math.max(minY, Math.min(maxY, above));
   };
+
+  const p1Visible = hoveredPoint === 0 || activePoint === 0;
+  const p2Visible = hoveredPoint === 1 || activePoint === 1;
+  const trackY = bounds.top - 32;
 
   return (
     <svg
       ref={svgRef}
-      className="w-full h-[78svh] min-h-[420px] md:h-auto md:aspect-[5/3] rounded-xl touch-none select-none"
+      className="w-full aspect-[5/3] touch-none select-none"
       viewBox={`0 0 ${VB.width} ${VB.height}`}
       role="img"
       aria-label="Cubic Bézier editor"
     >
+      {/* Integrated Live Motion Track aligned with bounds.left -> bounds.right */}
+      <g aria-hidden="true">
+        <line
+          x1={bounds.left}
+          y1={trackY}
+          x2={bounds.right}
+          y2={trackY}
+          stroke="var(--border)"
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+        <circle
+          ref={linearDotRef}
+          cx={bounds.left}
+          cy={trackY}
+          r={4.5}
+          className="fill-muted-foreground/30 will-change-transform"
+        />
+        <circle
+          ref={easedDotRef}
+          cx={bounds.left}
+          cy={trackY}
+          r={6.5}
+          className="fill-primary will-change-transform"
+        />
+      </g>
+
       <CanvasGrid
         left={bounds.left}
         top={bounds.top}
         right={bounds.right}
         bottom={bounds.bottom}
       />
+
       <EasingCurve
         curve={curve}
         width={VB.width}
@@ -151,10 +219,11 @@ export default function BezierCanvas() {
         right={bounds.right}
         bottom={bounds.bottom}
       />
+
       <line
-        className="stroke-muted-foreground/30 transition-[stroke-width] duration-150 ease-out"
-        strokeWidth={activePoint === 0 ? 2.5 : 2}
-        strokeDasharray="6 3"
+        className="stroke-muted-foreground/40 transition-[stroke-width] duration-150 ease-out"
+        strokeWidth={activePoint === 0 ? 2.25 : 1.75}
+        strokeDasharray="5 4"
         strokeLinecap="round"
         x1={bounds.left}
         y1={bounds.bottom}
@@ -162,15 +231,16 @@ export default function BezierCanvas() {
         y2={pos.y1}
       />
       <line
-        className="stroke-muted-foreground/30 transition-[stroke-width] duration-150 ease-out"
-        strokeWidth={activePoint === 1 ? 2.5 : 2}
-        strokeDasharray="6 3"
+        className="stroke-muted-foreground/40 transition-[stroke-width] duration-150 ease-out"
+        strokeWidth={activePoint === 1 ? 2.25 : 1.75}
+        strokeDasharray="5 4"
         strokeLinecap="round"
         x1={bounds.right}
         y1={bounds.top}
         x2={pos.x2}
         y2={pos.y2}
       />
+
       <ResetAnchor
         x={bounds.left}
         y={bounds.bottom}
@@ -187,6 +257,7 @@ export default function BezierCanvas() {
         onReset={() => setCurve(bezier(curve[0], curve[1], 1, 1))}
         label="Reset P2"
       />
+
       <g>
         <ControlPoint
           x={pos.x1}
@@ -217,37 +288,31 @@ export default function BezierCanvas() {
           onBlur={() => setActivePoint(null)}
         />
       </g>
+
+      {/* Contextual in-place coordinates on hover/drag */}
       <text
         x={pos.x1}
         y={labelY(pos.y1)}
-        className="fill-primary text-xs font-medium pointer-events-none select-none transition-all duration-150 ease-out"
+        className="fill-primary font-mono text-[13px] font-medium pointer-events-none select-none [transform-box:fill-box] origin-bottom transition-[opacity,transform] duration-150 ease-[var(--ease-out)]"
         textAnchor="middle"
         style={{
-          opacity: hoveredPoint === 0 || activePoint === 0 ? 1 : 0,
-          transform:
-            hoveredPoint === 0 || activePoint === 0
-              ? "scale(1)"
-              : "scale(0.93)",
-          transformOrigin: "center",
+          opacity: p1Visible ? 1 : 0,
+          transform: p1Visible ? "scale(1)" : "scale(0.94)",
         }}
       >
-        P1
+        P1 · {curve[0].toFixed(2)}, {curve[1].toFixed(2)}
       </text>
       <text
         x={pos.x2}
         y={labelY(pos.y2)}
-        className="fill-primary text-xs font-medium pointer-events-none select-none transition-all duration-150 ease-out"
+        className="fill-primary font-mono text-[13px] font-medium pointer-events-none select-none [transform-box:fill-box] origin-bottom transition-[opacity,transform] duration-150 ease-[var(--ease-out)]"
         textAnchor="middle"
         style={{
-          opacity: hoveredPoint === 1 || activePoint === 1 ? 1 : 0,
-          transform:
-            hoveredPoint === 1 || activePoint === 1
-              ? "scale(1)"
-              : "scale(0.93)",
-          transformOrigin: "center",
+          opacity: p2Visible ? 1 : 0,
+          transform: p2Visible ? "scale(1)" : "scale(0.94)",
         }}
       >
-        P2
+        P2 · {curve[2].toFixed(2)}, {curve[3].toFixed(2)}
       </text>
     </svg>
   );
