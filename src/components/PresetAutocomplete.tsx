@@ -1,5 +1,5 @@
 "use client";
-import { Autocomplete } from "@base-ui-components/react/autocomplete";
+import { Autocomplete } from "@base-ui/react/autocomplete";
 import { useMemo } from "react";
 import {
   NAMED,
